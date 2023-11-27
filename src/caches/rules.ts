@@ -27,8 +27,14 @@ export async function loadRules() {
 
   for await (const dir of ruleDir) {
     const file = readFileSync(dir.fullPath, "utf-8");
-    const rule = parse(file);
-    console.log(`(·) Adding rule ${rule.title} (${rule.id}) to rule cache.`);
-    cache.set(rule.id, rule);
+    const rule = parse(file) as DiscordSigmaRule;
+    const [name] = dir.basename.split(".");
+
+    const identifier = name ?? dir.basename;
+
+    console.log(
+      `(·) Adding rule ${identifier} - ${rule.title} (${rule.id}) to rule cache.`
+    );
+    cache.set(identifier, rule);
   }
 }
