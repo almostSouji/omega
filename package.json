@@ -18,7 +18,8 @@
     "fmt": "yarn format",
     "start": "env-cmd node --enable-source-maps dist/index.js",
     "start:dev": "npm run build && npm run dev",
-    "dev": "env-cmd node --enable-source-maps dist/index.js"
+    "dev": "env-cmd node --enable-source-maps dist/index.js",
+    "test": "env-cmd node --enable-source-maps --test"
   },
   "dependencies": {
     "@discordjs/core": "^1.1.1",

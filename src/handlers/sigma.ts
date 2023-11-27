@@ -39,12 +39,38 @@ export type DiscordSigmaResult = {
   matches: boolean;
 };
 
+export function matchString(key: string, value: string, userValue: string) {
+  const [, op] = key.split("|");
+
+  let pattern =
+    op === "re" ? value : value.replaceAll("*", ".*").replaceAll("?", ".");
+  switch (op) {
+    case "contains":
+      pattern = `.*${pattern}.*`;
+      break;
+    case "startswith":
+      pattern = `${pattern}.*`;
+      break;
+    case "endswith":
+      pattern = `.*${pattern}`;
+      break;
+  }
+
+  try {
+    const re = new RE2(`^${pattern}$`, "i");
+    console.log(re.toString());
+    return re.test(userValue);
+  } catch {
+    return false;
+  }
+}
+
 function evaluateCondition(
   _key: string,
   value: string | number,
   user: APIUser
 ): boolean {
-  const [key, op] = _key.split("|");
+  const [key] = _key.split("|");
   if (!key) {
     return false;
   }
@@ -62,30 +88,7 @@ function evaluateCondition(
     if (typeof value === "string") {
       const userValue = user[key as keyof APIUser];
       if (typeof userValue === "string") {
-        let pattern = value;
-        switch (op) {
-          case "contains":
-            pattern = `.*${pattern}.*`;
-            break;
-          case "startswith":
-            pattern = `${pattern}.*`;
-            break;
-          case "endswith":
-            pattern = `.*${pattern}`;
-            break;
-          case "re":
-            pattern = pattern;
-            break;
-          default:
-            pattern = pattern.replaceAll("*", ".*").replaceAll("?", ".");
-        }
-
-        try {
-          const re = new RE2(`^${pattern}$`, "i");
-          return re.test(userValue);
-        } catch {
-          return false;
-        }
+        return matchString(_key, value, userValue);
       }
 
       return false;
