@@ -4,10 +4,10 @@ import RE2 from "re2";
 import util from "node:util";
 
 /**
- * Maps (or dictionaries) consist of key/value pairs, in which the key is a field in the log data and the value a string or integer value.
+ * Maps (or dictionaries) consist of key/value pairs, in which the key is a field in the log data and the value a string or integer value or list of strings or integer values (connected with or).
  * All elements of a map are joined with a logical AND.
  */
-type DSMap = { [key: string]: string | number };
+type DSMap = { [key: string]: string | number | string[] | number[] };
 
 /**
  * Lists can contain:
@@ -67,12 +67,18 @@ export function matchString(key: string, value: string, userValue: string) {
 
 function evaluateCondition(
   _key: string,
-  value: string | number,
+  value: string | number | string[] | number[],
   user: APIUser
 ): boolean {
   const [key] = _key.split("|");
   if (!key) {
     return false;
+  }
+
+  if (Array.isArray(value)) {
+    return value.some((innerValue) =>
+      evaluateCondition(_key, innerValue, user)
+    );
   }
 
   if (key in user) {
