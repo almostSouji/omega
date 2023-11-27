@@ -1,7 +1,7 @@
 {
   "name": "discord-sigma",
   "version": "0.0.0",
-  "description": "Sigma rules for Discord",
+  "description": "Sigma rules for Discord user detection",
   "contributors": [
     "Souji <timoqueezle@gmail.com>"
   ],
@@ -22,7 +22,13 @@
   },
   "dependencies": {
     "@discordjs/core": "^1.1.1",
-    "env-cmd": "^10.1.0"
+    "chevrotain": "^11.0.3",
+    "env-cmd": "^10.1.0",
+    "re2": "^1.20.9",
+    "readdirp": "^3.6.0",
+    "reflect-metadata": "^0.1.13",
+    "tsyringe": "^4.8.0",
+    "yaml": "^2.3.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
