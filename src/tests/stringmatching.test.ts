@@ -49,6 +49,17 @@ test("wildcards", async (ctx) => {
   });
 });
 
+test("regex", () => {
+  const key = "test|re";
+  assert.strictEqual(matchString(key, "f\\w\\d", "fo1"), true);
+  assert.strictEqual(matchString(key, "f\\w\\d", "fo11"), false);
+  assert.strictEqual(matchString(key, "\\d{3}", "111"), true);
+  assert.strictEqual(matchString(key, "\\d{3}", "1111"), false);
+  assert.strictEqual(matchString(key, "\\d?a", "a"), true);
+  assert.strictEqual(matchString(key, "\\d?a", "3a"), true);
+  assert.strictEqual(matchString(key, "\\d?a", "3aa"), false);
+});
+
 test("combinations", async (ctx) => {
   await ctx.test("endswith and wildcard", () => {
     const key = "test|endswith";
@@ -80,6 +91,7 @@ test("combinations", async (ctx) => {
     assert.strictEqual(matchString(key, "o?o", "fouobar"), true);
     assert.strictEqual(matchString(key, "o*o", "fozzzobar"), true);
     assert.strictEqual(matchString(key, "o*o", "foo"), true);
+    assert.strictEqual(matchString(key, "o*o", "fuobo"), true);
     assert.strictEqual(matchString(key, "o*o", "fuobar"), false);
   });
 });

@@ -2,42 +2,13 @@ import type { APIUser } from "@discordjs/core";
 import { parseSigmaCondition, QueryKind, type Query } from "../utils/parser.js";
 import RE2 from "re2";
 import util from "node:util";
-
-/**
- * Maps (or dictionaries) consist of key/value pairs, in which the key is a field in the log data and the value a string or integer value or list of strings or integer values (connected with or).
- * All elements of a map are joined with a logical AND.
- */
-type DSMap = { [key: string]: string | number | string[] | number[] };
-
-/**
- * Lists can contain:
- * strings that are applied to the full log message and are linked with a logical OR.
- * maps (see below). All map items of a list are logically linked with OR.
- */
-type DSList = string[] | DSMap[];
-
-type DSDetectionRecord = {
-  condition: string;
-} & { [key: string]: DSList | DSMap };
-
-export type DiscordSigmaRule = {
-  title: string;
-  id: string;
-  status: string;
-  description: string;
-  references?: string[];
-  author?: string;
-  date?: string;
-  tags?: string[];
-  detection: DSDetectionRecord;
-  falsepositives?: string[];
-  level: string;
-};
-
-export type DiscordSigmaResult = {
-  rule: DiscordSigmaRule;
-  matches: boolean;
-};
+import type {
+  DSMap,
+  DSDetectionRecord,
+  DSList,
+  DiscordSigmaRule,
+  DiscordSigmaResult,
+} from "../types/discordsigma.js";
 
 export function matchString(key: string, value: string, userValue: string) {
   const [, op] = key.split("|");
@@ -58,7 +29,6 @@ export function matchString(key: string, value: string, userValue: string) {
 
   try {
     const re = new RE2(`^${pattern}$`, "i");
-    console.log(re.toString());
     return re.test(userValue);
   } catch {
     return false;

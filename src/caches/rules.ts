@@ -4,7 +4,7 @@ import readdirp from "readdirp";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
 import { readFileSync } from "node:fs";
-import type { DiscordSigmaRule } from "../handlers/sigma.js";
+import type { DiscordSigmaRule } from "../types/discordsigma.js";
 
 export function createRuleCache() {
   const rules = new Map<string, DiscordSigmaRule>();
