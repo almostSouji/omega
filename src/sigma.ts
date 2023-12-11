@@ -1,11 +1,11 @@
 import { parseSigmaCondition, QueryKind, type Query } from "./utils/parser.js";
 import util from "node:util";
 import type {
-  DSMap,
-  DSDetectionRecord,
-  DSList,
-  DiscordSigmaRule,
-  DiscordSigmaResult,
+  SigmaMap,
+  DetectionRecord,
+  SigmaList,
+  Rule,
+  SigmaResult,
 } from "./types/discordsigma.js";
 import { matchString } from "./handlers/string.js";
 import { matchNumber } from "./handlers/number.js";
@@ -44,7 +44,7 @@ function evaluateCondition(
     if (typeof value === "boolean") {
       const userValue = structure[key];
       if (typeof userValue === "boolean") {
-        return value === userValue
+        return value === userValue;
       }
     }
   }
@@ -56,7 +56,7 @@ function evaluateStringEntry(phrase: string, structure: any) {
   return userString.includes(phrase);
 }
 
-function evaluateKeyMap(map: DSMap, structure: any) {
+function evaluateKeyMap(map: SigmaMap, structure: any) {
   const results: boolean[] = [];
 
   for (const [key, value] of Object.entries(map)) {
@@ -68,13 +68,13 @@ function evaluateKeyMap(map: DSMap, structure: any) {
 
 function evaluateDetectionExpression(
   key: string,
-  detection: DSDetectionRecord,
+  detection: DetectionRecord,
   structure: any
 ): boolean {
   if (key in detection) {
     const value = detection[key]!;
     if (Array.isArray(value)) {
-      value satisfies DSList;
+      value satisfies SigmaList;
 
       if (!value.length) {
         return false;
@@ -91,7 +91,7 @@ function evaluateDetectionExpression(
       });
     }
 
-    value satisfies DSMap;
+    value satisfies SigmaMap;
     return evaluateKeyMap(value, structure);
   }
 
@@ -100,7 +100,7 @@ function evaluateDetectionExpression(
 
 function curryConditionEvaluation(
   structure: any,
-  detection: DSDetectionRecord,
+  detection: DetectionRecord,
   evaluations: Map<string, boolean>
 ) {
   const evaluateCondition = (query: Query): boolean => {
@@ -124,10 +124,7 @@ function curryConditionEvaluation(
   return evaluateCondition;
 }
 
-export function handleSigmaRule(
-  structure: any,
-  rule: DiscordSigmaRule
-): DiscordSigmaResult {
+export function handleSigmaRule(structure: any, rule: Rule): SigmaResult {
   const detection = rule.detection;
   const condition = detection.condition;
 

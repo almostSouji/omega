@@ -1,52 +1,57 @@
-export type DSMap = {
+export type SigmaMap = {
   [key: string]: boolean | string | number | string[] | number[];
 };
 
-export type DSList = string[] | DSMap[];
+export type SigmaList = string[] | SigmaMap[];
 
-export type DSDetectionRecord = {
+export type DetectionRecord = {
   condition: string;
-} & { [key: string]: DSList | DSMap };
+} & { [key: string]: SigmaList | SigmaMap };
 
-export type DSRelationType =
+export type Relationtype =
   | "derived"
   | "obsolete"
   | "merged"
   | "renamed"
   | "similar";
 
-export type DSLevel = "informational" | "low" | "medium" | "high" | "critical";
+export type RuleLevel =
+  | "informational"
+  | "low"
+  | "medium"
+  | "high"
+  | "critical";
 
-export type DSRuleStatus =
+export type RuleStatus =
   | "unsupported"
   | "deprecated"
   | "experimental"
   | "test"
   | "stable";
 
-export type DSRelation = {
+export type Relation = {
   id: string;
-  type: DSRelationType;
+  type: Relationtype;
 };
 
-export type DiscordSigmaRule = {
+export type Rule = {
   title: string;
   id?: string;
-  status?: DSRuleStatus;
+  status?: RuleStatus;
   description?: string;
   references?: string[];
   author?: string;
   date?: string;
   modified?: string;
   tags?: string[];
-  detection: DSDetectionRecord;
+  detection: DetectionRecord;
   falsepositives?: string[];
-  level?: DSLevel;
-  related?: DSRelation[];
+  level?: RuleLevel;
+  related?: ReadLineOptions[];
   fields?: string[];
 };
 
-export type DiscordSigmaResult = {
-  rule: DiscordSigmaRule;
+export type SigmaResult = {
+  rule: Rule;
   matches: boolean;
 };

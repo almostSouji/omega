@@ -3,21 +3,21 @@ import { kRules } from "../utils/symbols.js";
 import readdirp from "readdirp";
 import { parse } from "yaml";
 import { readFileSync } from "node:fs";
-import type { DiscordSigmaRule } from "../types/discordsigma.js";
+import type { Rule } from "../types/discordsigma.js";
 
 export function createRuleCache() {
-  const rules = new Map<string, DiscordSigmaRule>();
+  const rules = new Map<string, Rule>();
   container.register(kRules, { useValue: rules });
   return rules;
 }
 
 export function getRuleChache() {
-  return container.resolve<Map<string, DiscordSigmaRule>>(kRules);
+  return container.resolve<Map<string, Rule>>(kRules);
 }
 
 export async function loadRulesInto(
   path: string,
-  cache: Map<string, DiscordSigmaRule>,
+  cache: Map<string, Rule>,
   suppressLogs = false
 ) {
   const ruleDir = readdirp(path, {
@@ -26,7 +26,7 @@ export async function loadRulesInto(
 
   for await (const dir of ruleDir) {
     const file = readFileSync(dir.fullPath, "utf-8");
-    const rule = parse(file) as DiscordSigmaRule;
+    const rule = parse(file) as Rule;
     const [name] = dir.basename.split(".");
 
     const identifier = name ?? dir.basename;
