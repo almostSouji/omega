@@ -8,6 +8,7 @@ import type {
   DiscordSigmaResult,
 } from "./types/discordsigma.js";
 import { matchString } from "./handlers/string.js";
+import { matchNumber } from "./handlers/number.js";
 
 function evaluateCondition(
   _key: string,
@@ -29,7 +30,7 @@ function evaluateCondition(
     if (Number.isFinite(value)) {
       const userValue = structure[key];
       if (Number.isFinite(userValue)) {
-        return userValue === value;
+        return matchNumber(key, value as number, userValue as number);
       }
 
       return false;
