@@ -11,6 +11,8 @@ tags:
 detection:
   avatarhash:
     - f607f494c
+  pattern:
+    - name|startswith: souji
   condition: avatarhash
 falsepositives:
   - Unknown
