@@ -1,0 +1,7 @@
+title: or map list
+detection:
+  p1:
+    - a|endswith: bar
+    - b: baz
+    - c|contains: foo
+  condition: p1

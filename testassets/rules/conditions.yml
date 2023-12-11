@@ -1,0 +1,13 @@
+title: or map list
+detection:
+  a:
+    a: 1
+  b:
+    b: 1
+  c:
+    c: 1
+  d:
+    d: 1
+  e:
+    e: 1
+  condition: (a or b) and (c or d) and not e

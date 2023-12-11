@@ -80,6 +80,8 @@ function evaluateDetectionExpression(
       return value.some((value) => {
         if (typeof value === "string") {
           return evaluateStringEntry(value, structure);
+        } else if (Number.isFinite(value)) {
+          return evaluateStringEntry(String(value), structure);
         } else {
           return evaluateKeyMap(value, structure);
         }

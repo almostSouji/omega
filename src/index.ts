@@ -2,8 +2,9 @@ import "reflect-metadata";
 import { GatewayDispatchEvents, GatewayIntentBits } from "@discordjs/core";
 import process from "process";
 import { default as Client } from "./client.js";
-import { createRuleCache, loadRules } from "./caches/rules.js";
+import { createRuleCache, loadRulesInto } from "./caches/rules.js";
 import { handleSigmaRule } from "./sigma.js";
+import { fileURLToPath } from "url";
 
 const token = process.env.DISCORD_TOKEN;
 if (!token) {
@@ -11,7 +12,10 @@ if (!token) {
 }
 
 const rulecache = createRuleCache();
-await loadRules();
+await loadRulesInto(
+  fileURLToPath(new URL("../rules", import.meta.url)),
+  rulecache
+);
 
 const client = new Client(
   token,

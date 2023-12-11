@@ -1,0 +1,7 @@
+title: everywhere or everywhere
+detection:
+  p1:
+    - foo
+  p2:
+    - bar
+  condition: p1 or p2

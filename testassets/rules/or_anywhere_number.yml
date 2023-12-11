@@ -1,0 +1,7 @@
+title: everywhere or everywhere numbers
+detection:
+  p1:
+    - 1
+  p2:
+    - 2
+  condition: p1 or p2
