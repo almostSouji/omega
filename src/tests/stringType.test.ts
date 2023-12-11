@@ -1,6 +1,6 @@
 import test from "node:test";
-import { matchString } from "../handlers/sigma.js";
 import assert from "node:assert";
+import { matchString } from "../handlers/string.js";
 
 test("match modifiers", async (ctx) => {
   await ctx.test("startswith", () => {

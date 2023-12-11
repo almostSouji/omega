@@ -1,6 +1,4 @@
-import type { APIUser } from "@discordjs/core";
-import { parseSigmaCondition, QueryKind, type Query } from "../utils/parser.js";
-import RE2 from "re2";
+import { parseSigmaCondition, QueryKind, type Query } from "./utils/parser.js";
 import util from "node:util";
 import type {
   DSMap,
@@ -8,74 +6,13 @@ import type {
   DSList,
   DiscordSigmaRule,
   DiscordSigmaResult,
-} from "../types/discordsigma.js";
-
-function parseDate(date: string) {
-  return /\d{4}\/\d{2}\/\d{2}/.exec(date)
-    ? new Date(`${date} GMT`)
-    : new Date(date);
-}
-
-function compareDate(a: Date, b: Date) {
-  return a.getTime() - b.getTime();
-}
-
-function isSameDay(a: Date, b: Date) {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
-
-export function matchDate(key: string, value: string, userValue: string) {
-  const valueDate = parseDate(value);
-  const userValueDate = parseDate(userValue);
-
-  const [, , op] = key.split("|");
-  switch (op) {
-    case "before":
-      return compareDate(userValueDate, valueDate) < 0;
-    case "after":
-      return compareDate(userValueDate, valueDate) > 0;
-    case "sameday":
-      return isSameDay(userValueDate, valueDate);
-    default:
-      return compareDate(userValueDate, valueDate) === 0;
-  }
-}
-
-export function matchString(key: string, value: string, userValue: string) {
-  const [, op] = key.split("|");
-
-  let pattern =
-    op === "re" ? value : value.replaceAll("*", ".*").replaceAll("?", ".");
-  switch (op) {
-    case "contains":
-      pattern = `.*${pattern}.*`;
-      break;
-    case "startswith":
-      pattern = `${pattern}.*`;
-      break;
-    case "endswith":
-      pattern = `.*${pattern}`;
-      break;
-    case "date":
-      return matchDate(key, value, userValue);
-  }
-
-  try {
-    const re = new RE2(`^${pattern}$`, "i");
-    return re.test(userValue);
-  } catch {
-    return false;
-  }
-}
+} from "./types/discordsigma.js";
+import { matchString } from "./handlers/string.js";
 
 function evaluateCondition(
   _key: string,
   value: string | number | string[] | number[],
-  user: APIUser
+  structure: any
 ): boolean {
   const [key] = _key.split("|");
   if (!key) {
@@ -84,13 +21,13 @@ function evaluateCondition(
 
   if (Array.isArray(value)) {
     return value.some((innerValue) =>
-      evaluateCondition(_key, innerValue, user)
+      evaluateCondition(_key, innerValue, structure)
     );
   }
 
-  if (key in user) {
+  if (key in structure) {
     if (Number.isFinite(value)) {
-      const userValue = user[key as keyof APIUser];
+      const userValue = structure[key];
       if (Number.isFinite(userValue)) {
         return userValue === value;
       }
@@ -99,7 +36,7 @@ function evaluateCondition(
     }
 
     if (typeof value === "string") {
-      const userValue = user[key as keyof APIUser];
+      const userValue = structure[key];
       if (typeof userValue === "string") {
         return matchString(_key, value, userValue);
       }
@@ -110,16 +47,16 @@ function evaluateCondition(
   return false;
 }
 
-function evaluateStringEntry(phrase: string, user: APIUser) {
-  const userString = util.inspect(user, { depth: null });
+function evaluateStringEntry(phrase: string, structure: any) {
+  const userString = util.inspect(structure, { depth: null });
   return userString.includes(phrase);
 }
 
-function evaluateKeyMap(map: DSMap, user: APIUser) {
+function evaluateKeyMap(map: DSMap, structure: any) {
   const results: boolean[] = [];
 
   for (const [key, value] of Object.entries(map)) {
-    results.push(evaluateCondition(key, value, user));
+    results.push(evaluateCondition(key, value, structure));
   }
 
   return results.every((result) => result);
@@ -128,7 +65,7 @@ function evaluateKeyMap(map: DSMap, user: APIUser) {
 function evaluateDetectionExpression(
   key: string,
   detection: DSDetectionRecord,
-  user: APIUser
+  structure: any
 ): boolean {
   if (key in detection) {
     const value = detection[key]!;
@@ -141,22 +78,22 @@ function evaluateDetectionExpression(
 
       return value.some((value) => {
         if (typeof value === "string") {
-          return evaluateStringEntry(value, user);
+          return evaluateStringEntry(value, structure);
         } else {
-          return evaluateKeyMap(value, user);
+          return evaluateKeyMap(value, structure);
         }
       });
     }
 
     value satisfies DSMap;
-    return evaluateKeyMap(value, user);
+    return evaluateKeyMap(value, structure);
   }
 
   return false;
 }
 
 function curryConditionEvaluation(
-  user: APIUser,
+  structure: any,
   detection: DSDetectionRecord,
   evaluations: Map<string, boolean>
 ) {
@@ -168,7 +105,7 @@ function curryConditionEvaluation(
         if (hit) {
           return hit;
         }
-        return evaluateDetectionExpression(key, detection, user);
+        return evaluateDetectionExpression(key, detection, structure);
       }
       case QueryKind.Not:
         return !evaluateCondition(query.c);
@@ -182,7 +119,7 @@ function curryConditionEvaluation(
 }
 
 export function handleSigmaRule(
-  user: APIUser,
+  structure: any,
   rule: DiscordSigmaRule
 ): DiscordSigmaResult {
   const detection = rule.detection;
@@ -192,7 +129,7 @@ export function handleSigmaRule(
   const root = parseSigmaCondition(condition);
 
   const evaluationFunction = curryConditionEvaluation(
-    user,
+    structure,
     detection,
     evaluations
   );

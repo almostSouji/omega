@@ -3,7 +3,7 @@ import { GatewayDispatchEvents, GatewayIntentBits } from "@discordjs/core";
 import process from "process";
 import { default as Client } from "./client.js";
 import { createRuleCache, loadRules } from "./caches/rules.js";
-import { handleSigmaRule } from "./handlers/sigma.js";
+import { handleSigmaRule } from "./sigma.js";
 
 const token = process.env.DISCORD_TOKEN;
 if (!token) {
