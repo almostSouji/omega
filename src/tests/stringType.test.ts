@@ -1,97 +1,98 @@
-import test from "node:test";
+import { describe, it } from "node:test";
 import assert from "node:assert";
 import { matchString } from "../handlers/string.js";
 
-test("match modifiers", async (ctx) => {
-  await ctx.test("startswith", () => {
+describe("string modifiers", () => {
+  it("should evaluate string startswith modifiers", () => {
     const key = "test|startswith";
     const value = "foo";
-    assert.strictEqual(matchString(key, value, "foobar"), true);
-    assert.strictEqual(matchString(key, value, "barfoo"), false);
-    assert.strictEqual(matchString(key, value, "barfoobar"), false);
-    assert.strictEqual(matchString(key, value, "barbar"), false);
+    assert(matchString(key, value, "foobar"));
+    assert(!matchString(key, value, "barfoo"));
+    assert(!matchString(key, value, "barfoobar"));
+    assert(!matchString(key, value, "barbar"));
   });
 
-  await ctx.test("endswith", () => {
+  it("should evaluate stirng endswith modifiers", () => {
     const key = "test|endswith";
     const value = "foo";
-    assert.strictEqual(matchString(key, value, "foobar"), false);
-    assert.strictEqual(matchString(key, value, "barfoo"), true);
-    assert.strictEqual(matchString(key, value, "barfoobar"), false);
-    assert.strictEqual(matchString(key, value, "barbar"), false);
+    assert(!matchString(key, value, "foobar"));
+    assert(matchString(key, value, "barfoo"));
+    assert(!matchString(key, value, "barfoobar"));
+    assert(!matchString(key, value, "barbar"));
   });
 
-  await ctx.test("contains", () => {
+  it("should evaluate string contains modifiers", () => {
     const key = "test|contains";
     const value = "foo";
-    assert.strictEqual(matchString(key, value, "foobar"), true);
-    assert.strictEqual(matchString(key, value, "barfoo"), true);
-    assert.strictEqual(matchString(key, value, "barfoobar"), true);
-    assert.strictEqual(matchString(key, value, "barbar"), false);
+    assert(matchString(key, value, "foobar"));
+    assert(matchString(key, value, "barfoo"));
+    assert(matchString(key, value, "barfoobar"));
+    assert(!matchString(key, value, "barbar"));
   });
 });
 
-test("wildcards", async (ctx) => {
-  const key = "test";
-  await ctx.test("single character wildcard", () => {
-    assert.strictEqual(matchString(key, "fo?bar", "fobar"), false);
-    assert.strictEqual(matchString(key, "fo?bar", "foobar"), true);
-    assert.strictEqual(matchString(key, "fo?bar", "foubar"), true);
-    assert.strictEqual(matchString(key, "fo?bar", "fooobar"), false);
+describe("wildcards", () => {
+  it("should handle single character wildcards", () => {
+    const key = "test";
+    assert(!matchString(key, "fo?bar", "fobar"));
+    assert(matchString(key, "fo?bar", "foobar"));
+    assert(matchString(key, "fo?bar", "foubar"));
+    assert(!matchString(key, "fo?bar", "fooobar"));
   });
 
-  await ctx.test("unbounded wildcard", () => {
-    assert.strictEqual(matchString(key, "fo*bar", "fobar"), true);
-    assert.strictEqual(matchString(key, "fo*bar", "foobar"), true);
-    assert.strictEqual(matchString(key, "fo*bar", "foubar"), true);
-    assert.strictEqual(matchString(key, "fo*bar", "fooobar"), true);
-    assert.strictEqual(matchString(key, "fo*bar", "fbar"), false);
+  it("should handle unbounded wildcards", () => {
+    const key = "test";
+    assert(matchString(key, "fo*bar", "fobar"));
+    assert(matchString(key, "fo*bar", "foobar"));
+    assert(matchString(key, "fo*bar", "foubar"));
+    assert(matchString(key, "fo*bar", "fooobar"));
+    assert(!matchString(key, "fo*bar", "fbar"));
   });
 });
 
-test("regex", () => {
+it("should handle regular expressions", () => {
   const key = "test|re";
-  assert.strictEqual(matchString(key, "f\\w\\d", "fo1"), true);
-  assert.strictEqual(matchString(key, "f\\w\\d", "fo11"), false);
-  assert.strictEqual(matchString(key, "\\d{3}", "111"), true);
-  assert.strictEqual(matchString(key, "\\d{3}", "1111"), false);
-  assert.strictEqual(matchString(key, "\\d?a", "a"), true);
-  assert.strictEqual(matchString(key, "\\d?a", "3a"), true);
-  assert.strictEqual(matchString(key, "\\d?a", "3aa"), false);
+  assert(matchString(key, "f\\w\\d", "fo1"));
+  assert(!matchString(key, "f\\w\\d", "fo11"));
+  assert(matchString(key, "\\d{3}", "111"));
+  assert(!matchString(key, "\\d{3}", "1111"));
+  assert(matchString(key, "\\d?a", "a"));
+  assert(matchString(key, "\\d?a", "3a"));
+  assert(!matchString(key, "\\d?a", "3aa"));
 });
 
-test("combinations", async (ctx) => {
-  await ctx.test("endswith and wildcard", () => {
+describe("combinations of modifiers and wildcards", () => {
+  it("should handle combinations of endeswith and wildcards", () => {
     const key = "test|endswith";
-    assert.strictEqual(matchString(key, "b?r", "foobar"), true);
-    assert.strictEqual(matchString(key, "b?r", "foober"), true);
-    assert.strictEqual(matchString(key, "b?r", "foobaa"), false);
-    assert.strictEqual(matchString(key, "b?r", "foobaar"), false);
-    assert.strictEqual(matchString(key, "b*r", "foobaar"), true);
-    assert.strictEqual(matchString(key, "b*r", "foobaer"), true);
-    assert.strictEqual(matchString(key, "b*r", "foobaaa"), false);
+    assert(matchString(key, "b?r", "foobar"));
+    assert(matchString(key, "b?r", "foober"));
+    assert(!matchString(key, "b?r", "foobaa"));
+    assert(!matchString(key, "b?r", "foobaar"));
+    assert(matchString(key, "b*r", "foobaar"));
+    assert(matchString(key, "b*r", "foobaer"));
+    assert(!matchString(key, "b*r", "foobaaa"));
   });
 
-  await ctx.test("startswith and wildcard", () => {
+  it("should handle combinations of startswith and wildcards", () => {
     const key = "test|startswith";
-    assert.strictEqual(matchString(key, "f?o", "foobar"), true);
-    assert.strictEqual(matchString(key, "f?o", "fuobar"), true);
-    assert.strictEqual(matchString(key, "f?o", "fobar"), false);
-    assert.strictEqual(matchString(key, "f?o", "fuubar"), false);
-    assert.strictEqual(matchString(key, "f*o", "fuuobar"), true);
-    assert.strictEqual(matchString(key, "f*o", "fobar"), true);
-    assert.strictEqual(matchString(key, "f*o", "fubar"), false);
+    assert(matchString(key, "f?o", "foobar"));
+    assert(matchString(key, "f?o", "fuobar"));
+    assert(!matchString(key, "f?o", "fobar"));
+    assert(!matchString(key, "f?o", "fuubar"));
+    assert(matchString(key, "f*o", "fuuobar"));
+    assert(matchString(key, "f*o", "fobar"));
+    assert(!matchString(key, "f*o", "fubar"));
   });
 
-  await ctx.test("contains and wildcard", () => {
+  it("should handle combinations of contains and wildcards", () => {
     const key = "test|contains";
-    assert.strictEqual(matchString(key, "o?o", "foobar"), false);
-    assert.strictEqual(matchString(key, "o?o", "fobaro"), false);
-    assert.strictEqual(matchString(key, "o?o", "fooobar"), true);
-    assert.strictEqual(matchString(key, "o?o", "fouobar"), true);
-    assert.strictEqual(matchString(key, "o*o", "fozzzobar"), true);
-    assert.strictEqual(matchString(key, "o*o", "foo"), true);
-    assert.strictEqual(matchString(key, "o*o", "fuobo"), true);
-    assert.strictEqual(matchString(key, "o*o", "fuobar"), false);
+    assert(!matchString(key, "o?o", "foobar"));
+    assert(!matchString(key, "o?o", "fobaro"));
+    assert(matchString(key, "o?o", "fooobar"));
+    assert(matchString(key, "o?o", "fouobar"));
+    assert(matchString(key, "o*o", "fozzzobar"));
+    assert(matchString(key, "o*o", "foo"));
+    assert(matchString(key, "o*o", "fuobo"));
+    assert(!matchString(key, "o*o", "fuobar"));
   });
 });
