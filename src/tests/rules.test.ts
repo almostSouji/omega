@@ -20,6 +20,7 @@ const testrules = [
   "map_list",
   "maps",
   "conditions",
+  "boolean",
 ];
 
 describe("rule loading", () => {
@@ -116,5 +117,14 @@ describe("rule handling", () => {
     assert(!handleSigmaRule({ a: 1, d: 1, e: 1 }, rule)?.matches);
     assert(handleSigmaRule({ a: 1, d: 1, e: 2 }, rule)?.matches);
     assert(!handleSigmaRule({ a: 1, b: 1, e: 2 }, rule)?.matches);
+  });
+
+  it("should handle boolean attributes", () => {
+    const rule = testCache.get("boolean")!;
+    assert(!handleSigmaRule({}, rule)?.matches);
+    assert(!handleSigmaRule({ a: false }, rule)?.matches);
+    assert(handleSigmaRule({ a: true }, rule)?.matches);
+    assert(!handleSigmaRule({ a: "1" }, rule)?.matches);
+    assert(!handleSigmaRule({ a: 1 }, rule)?.matches);
   });
 });

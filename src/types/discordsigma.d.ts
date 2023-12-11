@@ -1,4 +1,6 @@
-export type DSMap = { [key: string]: string | number | string[] | number[] };
+export type DSMap = {
+  [key: string]: boolean | string | number | string[] | number[];
+};
 
 export type DSList = string[] | DSMap[];
 

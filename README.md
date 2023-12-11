@@ -9,9 +9,10 @@ Discord sigma is a small bot designed to detect patterns in Discord users. The p
 
 - [x] Proper tests for string matching patterns as per [detection rules](https://sigmahq.io/sigma-specification/Sigma_specification.html#detection)
 - [x] Date type with before|after|duringday modifiers
-- [ ] Test objects against rule matching
+- [x] Test objects against rule matching
 - [ ] Test validity of used rules
-- [ ] Look into [escape sequences](https://sigmahq.io/sigma-specification/Sigma_specification.html#detection)
+- [x] Look into [escape sequences](https://sigmahq.io/sigma-specification/Sigma_specification.html#detection)
 - [ ] Throw errors in mismatches instead of just returning false
 - [x] Number modifiers greater|lesser
 - [ ] Rule evaluation CI
+- [ ] Dot attribute access (might need a secondary parser for this

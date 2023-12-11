@@ -1,0 +1,5 @@
+title: or map list
+detection:
+  p1:
+    a: true
+  condition: p1

@@ -12,7 +12,7 @@ import { matchNumber } from "./handlers/number.js";
 
 function evaluateCondition(
   _key: string,
-  value: string | number | string[] | number[],
+  value: boolean | string | number | string[] | number[],
   structure: any
 ): boolean {
   const [key] = _key.split("|");
@@ -32,8 +32,6 @@ function evaluateCondition(
       if (Number.isFinite(userValue)) {
         return matchNumber(key, value as number, userValue as number);
       }
-
-      return false;
     }
 
     if (typeof value === "string") {
@@ -41,8 +39,13 @@ function evaluateCondition(
       if (typeof userValue === "string") {
         return matchString(_key, value, userValue);
       }
+    }
 
-      return false;
+    if (typeof value === "boolean") {
+      const userValue = structure[key];
+      if (typeof userValue === "boolean") {
+        return value === userValue
+      }
     }
   }
   return false;
