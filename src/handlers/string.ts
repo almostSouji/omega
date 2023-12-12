@@ -1,5 +1,5 @@
 import RE2 from "re2";
-import { matchDate } from "./date.js";
+import { matchDate, matchSnowflake } from "./date.js";
 import util from "node:util";
 
 export function matchString(key: string, value: string, userValue: string) {
@@ -19,6 +19,10 @@ export function matchString(key: string, value: string, userValue: string) {
       break;
     case "date":
       return matchDate(key, value, userValue);
+  }
+
+  if (op?.startsWith("snowflake")) {
+    return matchSnowflake(key, value, userValue);
   }
 
   try {

@@ -37,7 +37,7 @@ describe("date conversion", () => {
       !matchString(
         key,
         "2023-11-17T23:00:01.000000+00:00",
-        "2023-11-17T23:00:01.00000+01:00"
+        "2023-11-17T23:00:01.00000-04:00"
       )
     );
   });
@@ -75,8 +75,55 @@ describe("date conversion", () => {
       !matchString(
         key,
         "2023-11-17T12:04:34.415000+00:00",
-        "2023-11-17T12:04:34.416000+01:00"
+        "2023-11-17T12:04:34.415000+01:00"
       )
     );
+  });
+});
+
+describe("snowflake conversion", () => {
+  it("should handle discord as snowflake provider", () => {
+    assert(
+      matchString(
+        "test|snowflake(discord)|after",
+        "2017/08/10",
+        "345341901051920395"
+      )
+    );
+    assert(
+      !matchString(
+        "test|snowflake(discord)|after",
+        "2017/08/11",
+        "345341901051920395"
+      )
+    );
+    assert(
+      !matchString(
+        "test|snowflake(discord)|before",
+        "2017/08/10",
+        "345341901051920395"
+      )
+    );
+    assert(
+      matchString(
+        "test|snowflake(discord)|before",
+        "2017/08/11",
+        "345341901051920395"
+      )
+    );
+    assert(
+      matchString(
+        "test|snowflake(discord)|sameday",
+        "2017/08/10",
+        "345341901051920395"
+      )
+    );
+  });
+
+  it("should default to unix epoch", () => {
+    assert(matchString("test|snowflake|after", "1970/01/01", "12587008"));
+    assert(!matchString("test|snowflake|after", "1970/01/02", "12587008"));
+    assert(!matchString("test|snowflake|before", "1970/01/01", "12587008"));
+    assert(matchString("test|snowflake|before", "1970/01/02", "12587008"));
   });
 });
