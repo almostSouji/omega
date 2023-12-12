@@ -2,7 +2,7 @@ import RE2 from "re2";
 import { matchDate, matchSnowflake } from "./date.js";
 import util from "node:util";
 
-export function matchString(key: string, value: string, userValue: string) {
+export function matchString(key: string, value: string, evaluatedValue: string) {
   const [, op] = key.split("|");
 
   let pattern =
@@ -18,16 +18,16 @@ export function matchString(key: string, value: string, userValue: string) {
       pattern = `.*${pattern}`;
       break;
     case "date":
-      return matchDate(key, value, userValue);
+      return matchDate(key, value, evaluatedValue);
   }
 
   if (op?.startsWith("snowflake")) {
-    return matchSnowflake(key, value, userValue);
+    return matchSnowflake(key, value, evaluatedValue);
   }
 
   try {
     const re = new RE2(`^${pattern}$`, "i");
-    return re.test(userValue);
+    return re.test(evaluatedValue);
   } catch {
     return false;
   }

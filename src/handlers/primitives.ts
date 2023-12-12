@@ -13,23 +13,23 @@ export function matchPrimitives(
 
   if (pureKey in structure) {
     if (Number.isFinite(value)) {
-      const userValue = structure[pureKey];
-      if (Number.isFinite(userValue)) {
-        return matchNumber(key, value as number, userValue as number);
+      const evaluatedValue = structure[pureKey];
+      if (Number.isFinite(evaluatedValue)) {
+        return matchNumber(key, value as number, evaluatedValue as number);
       }
     }
 
     if (typeof value === "string") {
-      const userValue = structure[pureKey];
-      if (typeof userValue === "string") {
-        return matchString(key, value, userValue);
+      const evaluatedValue = structure[pureKey];
+      if (typeof evaluatedValue === "string") {
+        return matchString(key, value, evaluatedValue);
       }
     }
 
     if (typeof value === "boolean") {
-      const userValue = structure[pureKey];
-      if (typeof userValue === "boolean") {
-        return value === userValue;
+      const evaluatedValue = structure[pureKey];
+      if (typeof evaluatedValue === "boolean") {
+        return value === evaluatedValue;
       }
     }
   }

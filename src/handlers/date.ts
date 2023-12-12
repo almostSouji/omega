@@ -19,21 +19,27 @@ function isSameDay(a: Date, b: Date) {
   );
 }
 
-export function matchDate(key: string, value: string, userValue: string) {
+export function matchDate(key: string, value: string, evaluatedValue: string) {
   const valueDate = parseDate(value);
-  const userValueDate = parseDate(userValue);
-  return matchDates(key, valueDate, userValueDate);
+  const evaluatedValueDate = parseDate(evaluatedValue);
+  return matchDates(key, valueDate, evaluatedValueDate);
 }
 
-export function matchSnowflake(key: string, value: string, userValue: string) {
+export function matchSnowflake(
+  key: string,
+  value: string,
+  evaluatedValue: string
+) {
   const [, snowflakeKey] = key.split("|");
   const epochString = snowflakeKey?.split(/[\(\)]/)[1];
   const epoch = convertEpoch(epochString);
 
   try {
     const valueDate = parseDate(value);
-    const userValueDate = new Date(Number((BigInt(userValue) >> 22n) + epoch));
-    return matchDates(key, valueDate, userValueDate);
+    const evaluatedValueDate = new Date(
+      Number((BigInt(evaluatedValue) >> 22n) + epoch)
+    );
+    return matchDates(key, valueDate, evaluatedValueDate);
   } catch {
     return false;
   }

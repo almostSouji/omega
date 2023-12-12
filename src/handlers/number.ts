@@ -1,20 +1,20 @@
-export function matchNumber(key: string, value: number, userValue: number) {
+export function matchNumber(key: string, value: number, evaluatedValue: number) {
   const [, op] = key.split("|");
 
   switch (op) {
     case "gt":
     case ">":
-      return userValue > value;
+      return evaluatedValue > value;
     case "gte":
     case ">=":
-      return userValue >= value;
+      return evaluatedValue >= value;
     case "lt":
     case "<":
-      return userValue < value;
+      return evaluatedValue < value;
     case "lte":
     case "<=":
-      return userValue <= value;
+      return evaluatedValue <= value;
     default:
-      return userValue === value;
+      return evaluatedValue === value;
   }
 }
