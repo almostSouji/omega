@@ -1,0 +1,5 @@
+title: nested attribute
+detection:
+  p1:
+    a.b.c.d.e|startswith: foo
+  condition: p1

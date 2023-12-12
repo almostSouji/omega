@@ -1,4 +1,4 @@
-title: or map list
+title: nested lists and maps
 detection:
   p1:
     a|endswith: bar

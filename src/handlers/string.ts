@@ -1,5 +1,6 @@
 import RE2 from "re2";
 import { matchDate } from "./date.js";
+import util from "node:util";
 
 export function matchString(key: string, value: string, userValue: string) {
   const [, op] = key.split("|");
@@ -26,4 +27,9 @@ export function matchString(key: string, value: string, userValue: string) {
   } catch {
     return false;
   }
+}
+
+export function phraseAnywhere(phrase: string, structure: any) {
+  const stringified = util.inspect(structure, { depth: 100 });
+  return stringified.includes(phrase);
 }

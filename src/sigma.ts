@@ -1,5 +1,4 @@
 import { parseSigmaCondition, QueryKind, type Query } from "./utils/parser.js";
-import util from "node:util";
 import type {
   SigmaMap,
   DetectionRecord,
@@ -7,63 +6,35 @@ import type {
   Rule,
   SigmaResult,
 } from "./types/discordsigma.js";
-import { matchString } from "./handlers/string.js";
-import { matchNumber } from "./handlers/number.js";
+import { phraseAnywhere } from "./handlers/string.js";
+import { matchList } from "./handlers/list.js";
+import { handleMultiPartKey } from "./handlers/multiPartKey.js";
+import { matchPrimitives } from "./handlers/primitives.js";
+import { matchKeyMap } from "./handlers/map.js";
 
-function evaluateCondition(
-  _key: string,
+export function evaluateCondition(
+  key: string,
   value: boolean | string | number | string[] | number[],
   structure: any
 ): boolean {
-  const [key] = _key.split("|");
-  if (!key) {
-    return false;
-  }
-
   if (Array.isArray(value)) {
-    return value.some((innerValue) =>
-      evaluateCondition(_key, innerValue, structure)
+    return matchList(value, key, structure);
+  }
+
+  if (key.includes(".")) {
+    const { key: remainingKey, structure: innerStructure } = handleMultiPartKey(
+      key,
+      structure
     );
-  }
 
-  if (key in structure) {
-    if (Number.isFinite(value)) {
-      const userValue = structure[key];
-      if (Number.isFinite(userValue)) {
-        return matchNumber(key, value as number, userValue as number);
-      }
+    if (!innerStructure || !remainingKey) {
+      return false;
     }
 
-    if (typeof value === "string") {
-      const userValue = structure[key];
-      if (typeof userValue === "string") {
-        return matchString(_key, value, userValue);
-      }
-    }
-
-    if (typeof value === "boolean") {
-      const userValue = structure[key];
-      if (typeof userValue === "boolean") {
-        return value === userValue;
-      }
-    }
-  }
-  return false;
-}
-
-function evaluateStringEntry(phrase: string, structure: any) {
-  const userString = util.inspect(structure, { depth: null });
-  return userString.includes(phrase);
-}
-
-function evaluateKeyMap(map: SigmaMap, structure: any) {
-  const results: boolean[] = [];
-
-  for (const [key, value] of Object.entries(map)) {
-    results.push(evaluateCondition(key, value, structure));
+    return evaluateCondition(remainingKey, value, innerStructure);
   }
 
-  return results.every((result) => result);
+  return matchPrimitives(key, value, structure);
 }
 
 function evaluateDetectionExpression(
@@ -82,17 +53,17 @@ function evaluateDetectionExpression(
 
       return value.some((value) => {
         if (typeof value === "string") {
-          return evaluateStringEntry(value, structure);
+          return phraseAnywhere(value, structure);
         } else if (Number.isFinite(value)) {
-          return evaluateStringEntry(String(value), structure);
+          return phraseAnywhere(String(value), structure);
         } else {
-          return evaluateKeyMap(value, structure);
+          return matchKeyMap(value, structure);
         }
       });
     }
 
     value satisfies SigmaMap;
-    return evaluateKeyMap(value, structure);
+    return matchKeyMap(value, structure);
   }
 
   return false;

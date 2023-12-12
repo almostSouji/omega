@@ -1,4 +1,4 @@
-title: everywhere or everywhere
+title: top level string list
 detection:
   p1:
     - foo
