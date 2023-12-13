@@ -147,7 +147,7 @@ class Parser extends EmbeddedActionsParser {
 
 const parser = new Parser();
 
-export function parseSigmaCondition(text: string) {
+export function parseOmegaCondition(text: string) {
   const lex = lexer.tokenize(text);
   parser.input = lex.tokens;
   const parserResult = parser.pexpr();

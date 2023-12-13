@@ -1,11 +1,11 @@
-import { parseSigmaCondition, QueryKind, type Query } from "./utils/parser.js";
+import { parseOmegaCondition, QueryKind, type Query } from "./utils/parser.js";
 import type {
-  SigmaMap,
+  OmegaMap,
   DetectionRecord,
-  SigmaList,
+  OmegaList,
   Rule,
-  SigmaResult,
-} from "./types/jsSigma.js";
+  OmegaResult,
+} from "./types/omega.js";
 import { phraseAnywhere } from "./handlers/string.js";
 import { matchList } from "./handlers/list.js";
 import { handleMultiPartKey } from "./handlers/multiPartKey.js";
@@ -45,7 +45,7 @@ function evaluateDetectionExpression(
   if (key in detection) {
     const value = detection[key]!;
     if (Array.isArray(value)) {
-      value satisfies SigmaList;
+      value satisfies OmegaList;
 
       if (!value.length) {
         return false;
@@ -62,7 +62,7 @@ function evaluateDetectionExpression(
       });
     }
 
-    value satisfies SigmaMap;
+    value satisfies OmegaMap;
     return matchKeyMap(value, structure);
   }
 
@@ -95,12 +95,18 @@ function curryConditionEvaluation(
   return evaluateCondition;
 }
 
-export function handleSigmaRule(structure: any, rule: Rule): SigmaResult {
+/**
+ * Evaluate an arbitraty object against the provided omega rule
+ * @param structure - The object structure to evaluate
+ * @param rule - The omega rule to evaluate against
+ * @returns The result of the evaluation and the rule
+ */
+export function evaluateOmega(structure: any, rule: Rule): OmegaResult {
   const detection = rule.detection;
   const condition = detection.condition;
 
   const evaluations = new Map<string, boolean>();
-  const root = parseSigmaCondition(condition);
+  const root = parseOmegaCondition(condition);
 
   const evaluationFunction = curryConditionEvaluation(
     structure,

@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import { describe, it } from "node:test";
 import assert from "node:assert";
-import type { Rule } from "../types/jsSigma.js";
+import type { Rule } from "../types/omega.js";
 import { fileURLToPath } from "node:url";
 import { loadRulesInto } from "../caches/rules.js";
-import { handleSigmaRule } from "../sigma.js";
+import { evaluateOmega } from "../omega.js";
 
 const testCache = new Map<string, Rule>();
 await loadRulesInto(
@@ -49,91 +49,87 @@ describe("rule handling", () => {
   it("should handle anywhere string rules", () => {
     const rule = testCache.get("or_anywhere")!;
 
-    assert(handleSigmaRule({ a: "foo" }, rule).matches);
-    assert(handleSigmaRule({ a: "bar" }, rule).matches);
-    assert(handleSigmaRule({ a: "bar", b: "foo" }, rule).matches);
-    assert(handleSigmaRule({ bar: 1 }, rule).matches);
-    assert(handleSigmaRule({ a: [{ b: "bar" }] }, rule).matches);
-    assert(!handleSigmaRule({}, rule).matches);
+    assert(evaluateOmega({ a: "foo" }, rule).matches);
+    assert(evaluateOmega({ a: "bar" }, rule).matches);
+    assert(evaluateOmega({ a: "bar", b: "foo" }, rule).matches);
+    assert(evaluateOmega({ bar: 1 }, rule).matches);
+    assert(evaluateOmega({ a: [{ b: "bar" }] }, rule).matches);
+    assert(!evaluateOmega({}, rule).matches);
   });
 
   it("should handle anywhere number rules", () => {
     const rule = testCache.get("or_anywhere_number")!;
 
-    assert(handleSigmaRule({ a: "fo1o" }, rule).matches);
-    assert(handleSigmaRule({ a: "bar2" }, rule).matches);
-    assert(handleSigmaRule({ a: "b1ar", b: "2foo" }, rule).matches);
-    assert(handleSigmaRule({ bar: 1 }, rule).matches);
-    assert(handleSigmaRule({ a: [{ 2: "bar" }] }, rule).matches);
-    assert(!handleSigmaRule({}, rule).matches);
+    assert(evaluateOmega({ a: "fo1o" }, rule).matches);
+    assert(evaluateOmega({ a: "bar2" }, rule).matches);
+    assert(evaluateOmega({ a: "b1ar", b: "2foo" }, rule).matches);
+    assert(evaluateOmega({ bar: 1 }, rule).matches);
+    assert(evaluateOmega({ a: [{ 2: "bar" }] }, rule).matches);
+    assert(!evaluateOmega({}, rule).matches);
   });
 
   it("should evaluate string lists as any of anywhere", () => {
     const rule = testCache.get("string_list")!;
 
-    assert(handleSigmaRule({ a: "foo" }, rule).matches);
-    assert(handleSigmaRule({ bar: "baz" }, rule).matches);
-    assert(!handleSigmaRule({}, rule).matches);
+    assert(evaluateOmega({ a: "foo" }, rule).matches);
+    assert(evaluateOmega({ bar: "baz" }, rule).matches);
+    assert(!evaluateOmega({}, rule).matches);
   });
 
   it("should evaluate map lists as any of", () => {
     const rule = testCache.get("map_list")!;
 
-    assert(!handleSigmaRule({ a: "foo" }, rule).matches);
-    assert(!handleSigmaRule({ bar: "baz" }, rule).matches);
-    assert(!handleSigmaRule({}, rule).matches);
-    assert(handleSigmaRule({ a: "bar", b: "foo" }, rule).matches);
-    assert(handleSigmaRule({ a: "foo", b: "baz" }, rule).matches);
-    assert(handleSigmaRule({ a: "foobar", b: "baz" }, rule).matches);
-    assert(!handleSigmaRule({ c: "bar" }, rule).matches);
-    assert(!handleSigmaRule({ a: "barfoobaz" }, rule).matches);
-    assert(handleSigmaRule({ c: "barfoobaz" }, rule).matches);
+    assert(!evaluateOmega({ a: "foo" }, rule).matches);
+    assert(!evaluateOmega({ bar: "baz" }, rule).matches);
+    assert(!evaluateOmega({}, rule).matches);
+    assert(evaluateOmega({ a: "bar", b: "foo" }, rule).matches);
+    assert(evaluateOmega({ a: "foo", b: "baz" }, rule).matches);
+    assert(evaluateOmega({ a: "foobar", b: "baz" }, rule).matches);
+    assert(!evaluateOmega({ c: "bar" }, rule).matches);
+    assert(!evaluateOmega({ a: "barfoobaz" }, rule).matches);
+    assert(evaluateOmega({ c: "barfoobaz" }, rule).matches);
   });
 
   it("should evaluate maps as all", () => {
     const rule = testCache.get("maps")!;
-    assert(!handleSigmaRule({}, rule).matches);
-    assert(!handleSigmaRule({ a: "foobar" }, rule).matches);
-    assert(!handleSigmaRule({ a: "foobar", c: "barfoo" }, rule).matches);
+    assert(!evaluateOmega({}, rule).matches);
+    assert(!evaluateOmega({ a: "foobar" }, rule).matches);
+    assert(!evaluateOmega({ a: "foobar", c: "barfoo" }, rule).matches);
+    assert(evaluateOmega({ a: "foobar", c: "barfoo", b: "baz" }, rule).matches);
+    assert(evaluateOmega({ a: "foobar", c: "barfoo", b: "fob" }, rule).matches);
     assert(
-      handleSigmaRule({ a: "foobar", c: "barfoo", b: "baz" }, rule).matches
+      !evaluateOmega({ a: "foobar", c: "barfoo", b: "bof" }, rule).matches
     );
-    assert(
-      handleSigmaRule({ a: "foobar", c: "barfoo", b: "fob" }, rule).matches
-    );
-    assert(
-      !handleSigmaRule({ a: "foobar", c: "barfoo", b: "bof" }, rule).matches
-    );
-    assert(handleSigmaRule({ d: "dodo" }, rule).matches);
-    assert(handleSigmaRule({ d: "odto" }, rule).matches);
-    assert(!handleSigmaRule({ d: "foo" }, rule).matches);
-    assert(!handleSigmaRule({ d: "fdoo" }, rule).matches);
+    assert(evaluateOmega({ d: "dodo" }, rule).matches);
+    assert(evaluateOmega({ d: "odto" }, rule).matches);
+    assert(!evaluateOmega({ d: "foo" }, rule).matches);
+    assert(!evaluateOmega({ d: "fdoo" }, rule).matches);
   });
 
   it("should handle nested boolean conditions", () => {
     const rule = testCache.get("conditions")!;
-    assert(!handleSigmaRule({}, rule).matches);
-    assert(handleSigmaRule({ a: 1, c: 1 }, rule).matches);
-    assert(handleSigmaRule({ a: 1, d: 1 }, rule).matches);
-    assert(!handleSigmaRule({ a: 1, d: 1, e: 1 }, rule).matches);
-    assert(handleSigmaRule({ a: 1, d: 1, e: 2 }, rule).matches);
-    assert(!handleSigmaRule({ a: 1, b: 1, e: 2 }, rule).matches);
+    assert(!evaluateOmega({}, rule).matches);
+    assert(evaluateOmega({ a: 1, c: 1 }, rule).matches);
+    assert(evaluateOmega({ a: 1, d: 1 }, rule).matches);
+    assert(!evaluateOmega({ a: 1, d: 1, e: 1 }, rule).matches);
+    assert(evaluateOmega({ a: 1, d: 1, e: 2 }, rule).matches);
+    assert(!evaluateOmega({ a: 1, b: 1, e: 2 }, rule).matches);
   });
 
   it("should handle boolean attributes", () => {
     const rule = testCache.get("boolean")!;
-    assert(!handleSigmaRule({}, rule).matches);
-    assert(!handleSigmaRule({ a: false }, rule).matches);
-    assert(handleSigmaRule({ a: true }, rule).matches);
-    assert(!handleSigmaRule({ a: "1" }, rule).matches);
-    assert(!handleSigmaRule({ a: 1 }, rule).matches);
+    assert(!evaluateOmega({}, rule).matches);
+    assert(!evaluateOmega({ a: false }, rule).matches);
+    assert(evaluateOmega({ a: true }, rule).matches);
+    assert(!evaluateOmega({ a: "1" }, rule).matches);
+    assert(!evaluateOmega({ a: 1 }, rule).matches);
   });
 
   it("should handle nested property keys", () => {
     const rule = testCache.get("nested_key")!;
-    assert(!handleSigmaRule({}, rule).matches);
+    assert(!evaluateOmega({}, rule).matches);
     assert(
-      handleSigmaRule({ a: { b: { c: { d: { e: "foobar" } } } } }, rule).matches
+      evaluateOmega({ a: { b: { c: { d: { e: "foobar" } } } } }, rule).matches
     );
   });
 });

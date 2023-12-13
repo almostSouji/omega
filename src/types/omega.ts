@@ -1,12 +1,12 @@
-export type SigmaMap = {
+export type OmegaMap = {
   [key: string]: boolean | string | number | string[] | number[];
 };
 
-export type SigmaList = string[] | SigmaMap[];
+export type OmegaList = string[] | OmegaMap[];
 
 export type DetectionRecord = {
   condition: string;
-} & { [key: string]: SigmaList | SigmaMap };
+} & { [key: string]: OmegaList | OmegaMap };
 
 export type Relationtype =
   | "derived"
@@ -51,7 +51,7 @@ export type Rule = {
   fields?: string[];
 };
 
-export type SigmaResult = {
+export type OmegaResult = {
   rule: Rule;
   matches: boolean;
 };

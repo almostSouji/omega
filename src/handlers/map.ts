@@ -1,7 +1,7 @@
-import { evaluateCondition } from "../sigma.js";
-import type { SigmaMap } from "../types/jsSigma.js";
+import { evaluateCondition } from "../omega.js";
+import type { OmegaMap } from "../types/omega.js";
 
-export function matchKeyMap(map: SigmaMap, structure: any) {
+export function matchKeyMap(map: OmegaMap, structure: any) {
   return Object.entries(map)
     .map(([key, value]) => {
       return evaluateCondition(key, value, structure);

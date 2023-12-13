@@ -1,4 +1,4 @@
-import { evaluateCondition } from "../sigma.js";
+import { evaluateCondition } from "../omega.js";
 
 export function matchList(
   list: string[] | number[],

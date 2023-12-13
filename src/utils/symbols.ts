@@ -1,1 +1,1 @@
-export const kRules = Symbol("SigmaRules");
+export const kRules = Symbol("OmegaRules");

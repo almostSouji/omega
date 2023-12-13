@@ -1,13 +1,14 @@
 {
-  "name": "js-sigma",
+  "name": "omega-rules",
   "version": "0.0.0",
-  "description": "Sigma rules for js object detection",
+  "description": "SIEM rules for js objects",
   "contributors": [
     "Souji <timoqueezle@gmail.com>"
   ],
   "license": "NO_LICENSE",
-  "private": true,
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build:clean": "del-cli dist",
     "build:check": "tsc --noEmit",
@@ -16,16 +17,14 @@
     "lint": "prettier --check . && eslint src --ext ts",
     "format": "prettier --write . && eslint src --ext ts --fix",
     "fmt": "yarn format",
-    "start": "env-cmd node --enable-source-maps dist/index.js",
+    "start": "node --enable-source-maps dist/index.js",
     "start:dev": "npm run build && npm run dev",
-    "dev": "env-cmd node --enable-source-maps dist/index.js",
-    "test": "yarn build && env-cmd node --enable-source-maps --test",
+    "dev": "node --enable-source-maps dist/index.js",
+    "test": "yarn build && node --enable-source-maps --test",
     "test:only": "yarn test --test-only"
   },
   "dependencies": {
-    "@discordjs/core": "^1.1.1",
     "chevrotain": "^11.0.3",
-    "env-cmd": "^10.1.0",
     "re2": "^1.20.9",
     "readdirp": "^3.6.0",
     "reflect-metadata": "^0.1.14",
