@@ -47,7 +47,7 @@ export type Rule = {
   detection: DetectionRecord;
   falsepositives?: string[];
   level?: RuleLevel;
-  related?: ReadLineOptions[];
+  related?: Relation[];
   fields?: string[];
 };
 

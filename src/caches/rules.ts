@@ -3,7 +3,7 @@ import { kRules } from "../utils/symbols.js";
 import readdirp from "readdirp";
 import { parse } from "yaml";
 import { readFileSync } from "node:fs";
-import type { Rule } from "../types/discordsigma.js";
+import type { Rule } from "../types/jsSigma.js";
 
 export function createRuleCache() {
   const rules = new Map<string, Rule>();

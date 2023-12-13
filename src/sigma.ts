@@ -5,7 +5,7 @@ import type {
   SigmaList,
   Rule,
   SigmaResult,
-} from "./types/discordsigma.js";
+} from "./types/jsSigma.js";
 import { phraseAnywhere } from "./handlers/string.js";
 import { matchList } from "./handlers/list.js";
 import { handleMultiPartKey } from "./handlers/multiPartKey.js";

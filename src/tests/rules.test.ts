@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { describe, it } from "node:test";
 import assert from "node:assert";
-import type { Rule } from "../types/discordsigma.js";
+import type { Rule } from "../types/jsSigma.js";
 import { fileURLToPath } from "node:url";
 import { loadRulesInto } from "../caches/rules.js";
 import { handleSigmaRule } from "../sigma.js";
