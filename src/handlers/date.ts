@@ -19,9 +19,14 @@ function isSameDay(a: Date, b: Date) {
   );
 }
 
-export function matchDate(key: string, value: string, evaluatedValue: string) {
+export function matchDate(
+  key: string,
+  value: string,
+  evaluatedValue: string | Date
+) {
   const valueDate = parseDate(value);
-  const evaluatedValueDate = parseDate(evaluatedValue);
+  const evaluatedValueDate =
+    evaluatedValue instanceof Date ? evaluatedValue : parseDate(evaluatedValue);
   return matchDates(key, valueDate, evaluatedValueDate);
 }
 

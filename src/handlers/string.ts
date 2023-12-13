@@ -2,7 +2,11 @@ import RE2 from "re2";
 import { matchDate, matchSnowflake } from "./date.js";
 import util from "node:util";
 
-export function matchString(key: string, value: string, evaluatedValue: string) {
+export function matchString(
+  key: string,
+  value: string,
+  evaluatedValue: string
+) {
   const [, op] = key.split("|");
 
   let pattern =

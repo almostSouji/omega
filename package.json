@@ -1,7 +1,7 @@
 {
-  "name": "discord-sigma",
+  "name": "js-sigma",
   "version": "0.0.0",
-  "description": "Sigma rules for Discord user detection",
+  "description": "Sigma rules for js object detection",
   "contributors": [
     "Souji <timoqueezle@gmail.com>"
   ],

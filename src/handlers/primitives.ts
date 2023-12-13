@@ -1,3 +1,4 @@
+import { matchDate } from "./date.js";
 import { matchNumber } from "./number.js";
 import { matchString } from "./string.js";
 
@@ -23,6 +24,10 @@ export function matchPrimitives(
       const evaluatedValue = structure[pureKey];
       if (typeof evaluatedValue === "string") {
         return matchString(key, value, evaluatedValue);
+      }
+
+      if (evaluatedValue instanceof Date) {
+        return matchDate(key, value, evaluatedValue);
       }
     }
 
