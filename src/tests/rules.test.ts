@@ -9,8 +9,7 @@ import { evaluateOmega } from "../omega.js";
 const testCache = new Map<string, Rule>();
 await loadRulesInto(
   fileURLToPath(new URL("../../testassets/rules", import.meta.url)),
-  testCache,
-  true
+  testCache
 );
 
 const testrules = [

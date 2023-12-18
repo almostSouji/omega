@@ -25,9 +25,10 @@
   },
   "dependencies": {
     "chevrotain": "^11.0.3",
+    "octokit": "^3.1.2",
     "re2": "^1.20.9",
     "readdirp": "^3.6.0",
-    "reflect-metadata": "^0.1.14",
+    "reflect-metadata": "^0.2.0",
     "tsyringe": "^4.8.0",
     "yaml": "^2.3.4"
   },
