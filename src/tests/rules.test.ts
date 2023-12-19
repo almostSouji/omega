@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert";
 import type { Rule } from "../types/omega.js";
 import { fileURLToPath } from "node:url";
-import { loadRulesInto } from "../caches/rules.js";
+import { loadRulesInto } from "../rules.js";
 import { evaluateOmega } from "../omega.js";
 
 const testCache = new Map<string, Rule>();

@@ -1,9 +1,9 @@
 import { container } from "tsyringe";
-import { kRules } from "../utils/symbols.js";
+import { kRules } from "./utils/symbols.js";
 import readdirp from "readdirp";
 import { parse } from "yaml";
 import { readFileSync } from "node:fs";
-import type { Rule } from "../types/omega.js";
+import type { Rule } from "./types/omega.js";
 import { Octokit } from "octokit";
 
 /**
