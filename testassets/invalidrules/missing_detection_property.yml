@@ -1,0 +1,5 @@
+title: missing detection property
+detection:
+  p1:
+    a: true
+  condition: p2

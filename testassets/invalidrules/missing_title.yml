@@ -1,0 +1,4 @@
+detection:
+  p1:
+    a: true
+  condition: p1

@@ -1,0 +1,5 @@
+title: missing detection condition
+detection:
+  p1:
+    a: true
+  foo: false

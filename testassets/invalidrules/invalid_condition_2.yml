@@ -1,0 +1,5 @@
+title: invalid condition 2
+detection:
+  p1:
+    a: true
+  condition: or and

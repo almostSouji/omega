@@ -72,9 +72,6 @@ async function fetchRepositoryContents(
     throw new Error(res as any);
   }
 
-  console.log(res);
-  console.log();
-
   for (const entry of res.data) {
     if (entry.type == "dir") {
       await fetchRepositoryContents(owner, repo, entry?.path, rules);

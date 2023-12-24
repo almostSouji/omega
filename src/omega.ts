@@ -95,6 +95,31 @@ function curryConditionEvaluation(
   return evaluateCondition;
 }
 
+export function extractConditionTerms(conditionString: string) {
+  const condition = parseOmegaCondition(conditionString);
+  if (!condition) {
+    return null;
+  }
+
+  const terms: string[] = [];
+  const evaluateCondition = (query: Query): any => {
+    switch (query.t) {
+      case QueryKind.Term: {
+        terms.push(query.c);
+        return;
+      }
+      case QueryKind.Not:
+        return evaluateCondition(query.c);
+      case QueryKind.And:
+      case QueryKind.Or:
+        return evaluateCondition(query.c[0]) || evaluateCondition(query.c[1]);
+    }
+  };
+
+  evaluateCondition(condition);
+  return terms;
+}
+
 /**
  * Evaluate an arbitraty object against the provided omega rule
  * @param structure - The object structure to evaluate
