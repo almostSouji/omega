@@ -1,0 +1,7 @@
+title: unused detection property
+detection:
+  p1:
+    a: true
+  p2:
+    b: false
+  condition: p1

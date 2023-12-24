@@ -1,3 +1,5 @@
+import { relationTypes, ruleLevels, ruleStati } from "../index.js";
+
 export type OmegaMap = {
   [key: string]: boolean | string | number | string[] | number[];
 };
@@ -8,26 +10,9 @@ export type DetectionRecord = {
   condition: string;
 } & { [key: string]: OmegaList | OmegaMap };
 
-export type Relationtype =
-  | "derived"
-  | "obsolete"
-  | "merged"
-  | "renamed"
-  | "similar";
-
-export type RuleLevel =
-  | "informational"
-  | "low"
-  | "medium"
-  | "high"
-  | "critical";
-
-export type RuleStatus =
-  | "unsupported"
-  | "deprecated"
-  | "experimental"
-  | "test"
-  | "stable";
+export type Relationtype = (typeof relationTypes)[number];
+export type RuleLevel = (typeof ruleLevels)[number];
+export type RuleStatus = (typeof ruleStati)[number];
 
 export type Relation = {
   id: string;

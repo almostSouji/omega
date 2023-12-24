@@ -1,0 +1,6 @@
+title: warning level
+detection:
+  p1:
+    a: true
+  condition: p1
+level: custom level

@@ -1,0 +1,7 @@
+title: warning relations 1 (type)
+detection:
+  p1:
+    a: true
+  condition: p1
+level: low
+related: 3

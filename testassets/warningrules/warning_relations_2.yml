@@ -1,0 +1,9 @@
+title: warning relations 2 (structure)
+detection:
+  p1:
+    a: true
+  condition: p1
+level: low
+related:
+  - id: 1
+    foo: a

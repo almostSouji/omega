@@ -1,0 +1,11 @@
+title: warning relations 3 (uniqueness)
+detection:
+  p1:
+    a: true
+  condition: p1
+level: low
+related:
+  - id: 1
+    type: derived
+  - id: 1
+    type: obsoletes

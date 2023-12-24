@@ -1,0 +1,6 @@
+title: warning status
+detection:
+  p1:
+    a: true
+  condition: p1
+status: custom status

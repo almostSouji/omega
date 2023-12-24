@@ -4,6 +4,5 @@ The pattern matching and rule syntax are based on [Sigma rules](https://github.c
 
 # Roadmap
 
-- [ ] Test validity of used rules
 - [ ] Rule evaluation CI
 - [ ] User test error handling for loading rules with invalid paths/weird user input
