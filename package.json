@@ -1,6 +1,6 @@
 {
   "name": "omega-rules",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "SIEM rules for JS objects",
   "author": "almostSouji <timoqueezle@gmail.com>",
   "license": "MIT",
