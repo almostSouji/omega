@@ -1,15 +1,16 @@
+/* eslint-disable id-length */
 import "reflect-metadata";
-import { describe, it } from "node:test";
 import assert from "node:assert";
-import type { Rule } from "../types/omega.js";
-import { fileURLToPath } from "node:url";
-import { loadRulesInto } from "../rules.js";
+import { fileURLToPath, URL } from "node:url";
+import { describe, it } from "node:test";
 import { evaluateOmega } from "../omega.js";
+import { loadRulesInto } from "../rules.js";
+import type { Rule } from "../types/omega.js";
 
 const testCache = new Map<string, Rule>();
 await loadRulesInto(
   fileURLToPath(new URL("../../testassets/rules", import.meta.url)),
-  testCache
+  testCache,
 );
 
 const testrules = [
@@ -23,29 +24,29 @@ const testrules = [
   "nested_key",
 ];
 
-describe("rule loading", () => {
-  it("should have rules loaded", () => {
+await describe("rule loading", async () => {
+  await it("should have rules loaded", () => {
     assert(testCache.size === testrules.length);
   });
 
-  it("should load tests", () => {
+  await it("should load tests", () => {
     assert(testrules.map((key) => testCache.get(key)).every(Boolean));
   });
 
-  it("should have a title and detection logic", () => {
+  await it("should have a title and detection logic", () => {
     assert(
       testrules
         .map((key) => {
           const rule = testCache.get(key);
           return rule?.title && rule?.detection;
         })
-        .every(Boolean)
+        .every(Boolean),
     );
   });
 });
 
-describe("rule handling", () => {
-  it("should handle anywhere string rules", () => {
+await describe("rule handling", async () => {
+  await it("should handle anywhere string rules", () => {
     const rule = testCache.get("or_anywhere")!;
 
     assert(evaluateOmega({ a: "foo" }, rule).matches);
@@ -56,7 +57,7 @@ describe("rule handling", () => {
     assert(!evaluateOmega({}, rule).matches);
   });
 
-  it("should handle anywhere number rules", () => {
+  await it("should handle anywhere number rules", () => {
     const rule = testCache.get("or_anywhere_number")!;
 
     assert(evaluateOmega({ a: "fo1o" }, rule).matches);
@@ -67,7 +68,7 @@ describe("rule handling", () => {
     assert(!evaluateOmega({}, rule).matches);
   });
 
-  it("should evaluate string lists as any of anywhere", () => {
+  await it("should evaluate string lists as any of anywhere", () => {
     const rule = testCache.get("string_list")!;
 
     assert(evaluateOmega({ a: "foo" }, rule).matches);
@@ -75,7 +76,7 @@ describe("rule handling", () => {
     assert(!evaluateOmega({}, rule).matches);
   });
 
-  it("should evaluate map lists as any of", () => {
+  await it("should evaluate map lists as any of", () => {
     const rule = testCache.get("map_list")!;
 
     assert(!evaluateOmega({ a: "foo" }, rule).matches);
@@ -89,7 +90,7 @@ describe("rule handling", () => {
     assert(evaluateOmega({ c: "barfoobaz" }, rule).matches);
   });
 
-  it("should evaluate maps as all", () => {
+  await it("should evaluate maps as all", () => {
     const rule = testCache.get("maps")!;
     assert(!evaluateOmega({}, rule).matches);
     assert(!evaluateOmega({ a: "foobar" }, rule).matches);
@@ -97,7 +98,7 @@ describe("rule handling", () => {
     assert(evaluateOmega({ a: "foobar", c: "barfoo", b: "baz" }, rule).matches);
     assert(evaluateOmega({ a: "foobar", c: "barfoo", b: "fob" }, rule).matches);
     assert(
-      !evaluateOmega({ a: "foobar", c: "barfoo", b: "bof" }, rule).matches
+      !evaluateOmega({ a: "foobar", c: "barfoo", b: "bof" }, rule).matches,
     );
     assert(evaluateOmega({ d: "dodo" }, rule).matches);
     assert(evaluateOmega({ d: "odto" }, rule).matches);
@@ -105,7 +106,7 @@ describe("rule handling", () => {
     assert(!evaluateOmega({ d: "fdoo" }, rule).matches);
   });
 
-  it("should handle nested boolean conditions", () => {
+  await it("should handle nested boolean conditions", () => {
     const rule = testCache.get("conditions")!;
     assert(!evaluateOmega({}, rule).matches);
     assert(evaluateOmega({ a: 1, c: 1 }, rule).matches);
@@ -115,7 +116,7 @@ describe("rule handling", () => {
     assert(!evaluateOmega({ a: 1, b: 1, e: 2 }, rule).matches);
   });
 
-  it("should handle boolean attributes", () => {
+  await it("should handle boolean attributes", () => {
     const rule = testCache.get("boolean")!;
     assert(!evaluateOmega({}, rule).matches);
     assert(!evaluateOmega({ a: false }, rule).matches);
@@ -124,11 +125,11 @@ describe("rule handling", () => {
     assert(!evaluateOmega({ a: 1 }, rule).matches);
   });
 
-  it("should handle nested property keys", () => {
+  await it("should handle nested property keys", () => {
     const rule = testCache.get("nested_key")!;
     assert(!evaluateOmega({}, rule).matches);
     assert(
-      evaluateOmega({ a: { b: { c: { d: { e: "foobar" } } } } }, rule).matches
+      evaluateOmega({ a: { b: { c: { d: { e: "foobar" } } } } }, rule).matches,
     );
   });
 });

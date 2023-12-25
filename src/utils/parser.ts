@@ -1,3 +1,4 @@
+/* eslint-disable id-length */
 // https://sigmahq.io/sigma-specification/
 
 import {
@@ -9,7 +10,7 @@ import {
 
 const Term = createToken({
   name: "TERM",
-  pattern: /[a-zA-Z]\w*/,
+  pattern: /[A-Za-z]\w*/,
 });
 
 const WhiteSpace = createToken({
@@ -38,12 +39,12 @@ const Not = createToken({
 
 const LeftParens = createToken({
   name: "LP",
-  pattern: /[(（\[]/,
+  pattern: /[([（]/,
 });
 
 const RightParens = createToken({
   name: "RP",
-  pattern: /[)）\]]/,
+  pattern: /[)\]）]/,
 });
 
 const AllTokens = [
@@ -59,30 +60,37 @@ const AllTokens = [
 const lexer = new Lexer(AllTokens);
 
 export enum QueryKind {
-  Term = "term",
-  Not = "not",
   And = "and",
+  Not = "not",
   Or = "or",
+  Term = "term",
 }
 
 export type Query = { t: QueryKind } & (
-  | { t: QueryKind.Term; c: string }
-  | { t: QueryKind.Not; c: Query }
-  | { t: QueryKind.Or; c: [Query, Query] }
-  | { t: QueryKind.And; c: [Query, Query] }
+  | { c: [Query, Query]; t: QueryKind.And }
+  | { c: [Query, Query]; t: QueryKind.Or }
+  | { c: Query; t: QueryKind.Not }
+  | { c: string; t: QueryKind.Term }
 );
 
 class Parser extends EmbeddedActionsParser {
-  pexpr!: ParserMethod<[], Query>;
-  por!: ParserMethod<[], Query>;
-  pand!: ParserMethod<[], Query>;
-  punit!: ParserMethod<[], Query>;
-  pnot!: ParserMethod<[], Query>;
-  patom!: ParserMethod<[], Query>;
-  pgroup!: ParserMethod<[], Query>;
-  pterm!: ParserMethod<[], Query>;
+  public pexpr!: ParserMethod<[], Query>;
 
-  constructor() {
+  public por!: ParserMethod<[], Query>;
+
+  public pand!: ParserMethod<[], Query>;
+
+  public punit!: ParserMethod<[], Query>;
+
+  public pnot!: ParserMethod<[], Query>;
+
+  public patom!: ParserMethod<[], Query>;
+
+  public pgroup!: ParserMethod<[], Query>;
+
+  public pterm!: ParserMethod<[], Query>;
+
+  public constructor() {
     super(AllTokens);
 
     this.RULE("pexpr", () => {
@@ -150,6 +158,5 @@ const parser = new Parser();
 export function parseOmegaCondition(text: string) {
   const lex = lexer.tokenize(text);
   parser.input = lex.tokens;
-  const parserResult = parser.pexpr();
-  return parserResult;
+  return parser.pexpr();
 }

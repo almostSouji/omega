@@ -39,7 +39,7 @@
     "@types/node": "^20.10.5",
     "del-cli": "^5.1.0",
     "eslint": "^8.56.0",
-    "eslint-config-neon": "0.1.35",
+    "eslint-config-neon": "0.1.57",
     "husky": "^8.0.3",
     "prettier": "^3.1.1",
     "rimraf": "^5.0.5",

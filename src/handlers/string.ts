@@ -1,11 +1,11 @@
+import util from "node:util";
 import RE2 from "re2";
 import { matchDate, matchSnowflake } from "./date.js";
-import util from "node:util";
 
 export function matchString(
   key: string,
   value: string,
-  evaluatedValue: string
+  evaluatedValue: string,
 ) {
   const [, op] = key.split("|");
 
@@ -23,6 +23,7 @@ export function matchString(
       break;
     case "date":
       return matchDate(key, value, evaluatedValue);
+    default:
   }
 
   if (op?.startsWith("snowflake")) {

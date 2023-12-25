@@ -1,10 +1,10 @@
-import { relationTypes, ruleLevels, ruleStati } from "../index.js";
+import type { relationTypes, ruleLevels, ruleStati } from "../index.js";
 
 export type OmegaMap = {
-  [key: string]: boolean | string | number | string[] | number[];
+  [key: string]: number[] | string[] | boolean | number | string;
 };
 
-export type OmegaList = string[] | OmegaMap[];
+export type OmegaList = OmegaMap[] | string[];
 
 export type DetectionRecord = {
   condition: string;
@@ -20,23 +20,23 @@ export type Relation = {
 };
 
 export type Rule = {
-  title: string;
-  id?: string;
-  status?: RuleStatus;
-  description?: string;
-  references?: string[];
   author?: string;
   date?: string;
-  modified?: string;
-  tags?: string[];
+  description?: string;
   detection: DetectionRecord;
   falsepositives?: string[];
-  level?: RuleLevel;
-  related?: Relation[];
   fields?: string[];
+  id?: string;
+  level?: RuleLevel;
+  modified?: string;
+  references?: string[];
+  related?: Relation[];
+  status?: RuleStatus;
+  tags?: string[];
+  title: string;
 };
 
 export type OmegaResult = {
-  rule: Rule;
   matches: boolean;
+  rule: Rule;
 };

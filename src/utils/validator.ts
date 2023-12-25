@@ -35,18 +35,18 @@ export enum RuleValidationErrorType {
 
 export type RuleValidationError =
   | {
-      type: RuleValidationErrorType.MissingRequired;
       fieldName: string;
+      type: RuleValidationErrorType.MissingRequired;
     }
   | {
-      type: RuleValidationErrorType.InvalidInput;
+      property: string;
+      type: RuleValidationErrorType.PropertyMissing;
     }
   | {
       type: RuleValidationErrorType.ConditionParseFailure;
     }
   | {
-      type: RuleValidationErrorType.PropertyMissing;
-      property: string;
+      type: RuleValidationErrorType.InvalidInput;
     };
 
 export type ValidRuleResult = {
@@ -55,15 +55,16 @@ export type ValidRuleResult = {
 };
 
 export type InvalidRuleResult = {
+  errors: RuleValidationError[];
   valid: false;
   warnings?: string[];
-  errors: RuleValidationError[];
 };
 
-export type RuleValidationResult = ValidRuleResult | InvalidRuleResult;
+export type RuleValidationResult = InvalidRuleResult | ValidRuleResult;
 
 /**
  * Validate a value to be a valid Omega rule
+ *
  * @param rule - The structure to validate as Rule
  * @returns The validation result
  */
@@ -106,7 +107,7 @@ export function validateRule(rule: any): RuleValidationResult {
         for (const property of Object.keys(rule.detection)) {
           if (!terms.includes(property) && property !== "condition") {
             warnings.push(
-              `Found unused property ${property} not present in the detection condition.`
+              `Found unused property ${property} not present in the detection condition.`,
             );
           }
         }
@@ -133,8 +134,8 @@ export function validateRule(rule: any): RuleValidationResult {
     if (!ruleStati.includes(status)) {
       warnings.push(
         `Non-standard rule status, expected one of ${ruleStati.join(
-          ", "
-        )} received ${status}`
+          ", ",
+        )} received ${status}`,
       );
     }
   }
@@ -144,8 +145,8 @@ export function validateRule(rule: any): RuleValidationResult {
     if (!ruleLevels.includes(level)) {
       warnings.push(
         `Non-standard rule level, expected one of ${ruleLevels.join(
-          ", "
-        )}, received ${level}`
+          ", ",
+        )}, received ${level}`,
       );
     }
   }
@@ -168,7 +169,7 @@ export function validateRule(rule: any): RuleValidationResult {
             warnings.push(
               `Non-standard relation type at relation id ${
                 relation.id
-              }, expected one of ${relationTypes.join(", ")}, received ${type}`
+              }, expected one of ${relationTypes.join(", ")}, received ${type}`,
             );
           }
 
@@ -177,13 +178,13 @@ export function validateRule(rule: any): RuleValidationResult {
           }
         } else {
           warnings.push(
-            `Non-standard relation shape, expected id: string, type: string, received ${relation}`
+            `Non-standard relation shape, expected id: string, type: string, received ${relation}`,
           );
         }
       }
     } else {
       warnings.push(
-        `Non-standard related value, expected list, found ${rule.related}`
+        `Non-standard related value, expected list, found ${rule.related}`,
       );
     }
   }
@@ -191,12 +192,13 @@ export function validateRule(rule: any): RuleValidationResult {
   return {
     warnings,
     errors,
-    valid: !Boolean(errors.length),
+    valid: !errors.length,
   };
 }
 
 /**
  * Validate a yaml rule to be a valid Omega rule
+ *
  * @param rule - The yaml rule to validate as Rule
  * @returns The validation result
  */

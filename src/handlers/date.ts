@@ -1,8 +1,8 @@
-export const DISCORD_EPOCH = 1420070400000n as const;
-export const TWITTER_EPOCH = 1288834974657n as const;
+export const DISCORD_EPOCH = 1_420_070_400_000n as const;
+export const TWITTER_EPOCH = 1_288_834_974_657n as const;
 
 function parseDate(date: string) {
-  return /\d{4}\/\d{2}\/\d{2}/.exec(date)
+  return /\d{4}(?:\/\d{2}){2}/.test(date)
     ? new Date(`${date} GMT`)
     : new Date(date);
 }
@@ -22,7 +22,7 @@ function isSameDay(a: Date, b: Date) {
 export function matchDate(
   key: string,
   value: string,
-  evaluatedValue: string | Date
+  evaluatedValue: Date | string,
 ) {
   const valueDate = parseDate(value);
   const evaluatedValueDate =
@@ -33,16 +33,16 @@ export function matchDate(
 export function matchSnowflake(
   key: string,
   value: string,
-  evaluatedValue: string
+  evaluatedValue: string,
 ) {
   const [, snowflakeKey] = key.split("|");
-  const epochString = snowflakeKey?.split(/[\(\)]/)[1];
+  const epochString = snowflakeKey?.split(/[()]/)[1];
   const epoch = convertEpoch(epochString);
 
   try {
     const valueDate = parseDate(value);
     const evaluatedValueDate = new Date(
-      Number((BigInt(evaluatedValue) >> 22n) + epoch)
+      Number((BigInt(evaluatedValue) >> 22n) + epoch),
     );
     return matchDates(key, valueDate, evaluatedValueDate);
   } catch {

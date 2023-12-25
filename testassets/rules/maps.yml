@@ -3,8 +3,8 @@ detection:
   p1:
     a|endswith: bar
     b:
-     - "baz"
-     - "fob"
+      - "baz"
+      - "fob"
     c|contains: foo
   p2:
     d|startswith:

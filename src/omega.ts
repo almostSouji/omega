@@ -1,4 +1,8 @@
-import { parseOmegaCondition, QueryKind, type Query } from "./utils/parser.js";
+import { matchList } from "./handlers/list.js";
+import { matchKeyMap } from "./handlers/map.js";
+import { handleMultiPartKey } from "./handlers/multiPartKey.js";
+import { matchPrimitives } from "./handlers/primitives.js";
+import { phraseAnywhere } from "./handlers/string.js";
 import type {
   OmegaMap,
   DetectionRecord,
@@ -6,16 +10,12 @@ import type {
   Rule,
   OmegaResult,
 } from "./types/omega.js";
-import { phraseAnywhere } from "./handlers/string.js";
-import { matchList } from "./handlers/list.js";
-import { handleMultiPartKey } from "./handlers/multiPartKey.js";
-import { matchPrimitives } from "./handlers/primitives.js";
-import { matchKeyMap } from "./handlers/map.js";
+import { parseOmegaCondition, QueryKind, type Query } from "./utils/parser.js";
 
 export function evaluateCondition(
   key: string,
-  value: boolean | string | number | string[] | number[],
-  structure: any
+  value: number[] | string[] | boolean | number | string,
+  structure: any,
 ): boolean {
   if (Array.isArray(value)) {
     return matchList(value, key, structure);
@@ -24,7 +24,7 @@ export function evaluateCondition(
   if (key.includes(".")) {
     const { key: remainingKey, structure: innerStructure } = handleMultiPartKey(
       key,
-      structure
+      structure,
     );
 
     if (!innerStructure || !remainingKey) {
@@ -40,7 +40,7 @@ export function evaluateCondition(
 function evaluateDetectionExpression(
   key: string,
   detection: DetectionRecord,
-  structure: any
+  structure: any,
 ): boolean {
   if (key in detection) {
     const value = detection[key]!;
@@ -72,7 +72,7 @@ function evaluateDetectionExpression(
 function curryConditionEvaluation(
   structure: any,
   detection: DetectionRecord,
-  evaluations: Map<string, boolean>
+  evaluations: Map<string, boolean>,
 ) {
   const evaluateCondition = (query: Query): boolean => {
     switch (query.t) {
@@ -82,8 +82,10 @@ function curryConditionEvaluation(
         if (hit) {
           return hit;
         }
+
         return evaluateDetectionExpression(key, detection, structure);
       }
+
       case QueryKind.Not:
         return !evaluateCondition(query.c);
       case QueryKind.And:
@@ -92,6 +94,7 @@ function curryConditionEvaluation(
         return evaluateCondition(query.c[0]) || evaluateCondition(query.c[1]);
     }
   };
+
   return evaluateCondition;
 }
 
@@ -108,6 +111,7 @@ export function extractConditionTerms(conditionString: string) {
         terms.push(query.c);
         return;
       }
+
       case QueryKind.Not:
         return evaluateCondition(query.c);
       case QueryKind.And:
@@ -122,6 +126,7 @@ export function extractConditionTerms(conditionString: string) {
 
 /**
  * Evaluate an arbitraty object against the provided omega rule
+ *
  * @param structure - The object structure to evaluate
  * @param rule - The omega rule to evaluate against
  * @returns The result of the evaluation and the rule
@@ -136,7 +141,7 @@ export function evaluateOmega(structure: any, rule: Rule): OmegaResult {
   const evaluationFunction = curryConditionEvaluation(
     structure,
     detection,
-    evaluations
+    evaluations,
   );
 
   return {

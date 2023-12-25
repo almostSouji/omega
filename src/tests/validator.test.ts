@@ -1,38 +1,38 @@
 import "reflect-metadata";
+import assert from "node:assert";
+import { fileURLToPath, URL } from "node:url";
 import { describe, it } from "node:test";
-import { fileURLToPath } from "node:url";
 import { loadRulesInto } from "../rules.js";
 import type { Rule } from "../types/omega.js";
 import { RuleValidationErrorType, validateRule } from "../utils/validator.js";
-import assert from "node:assert";
 
 const validRules = new Map<string, Rule>();
 await loadRulesInto(
   fileURLToPath(new URL("../../testassets/rules", import.meta.url)),
-  validRules
+  validRules,
 );
 
 const invalidRules = new Map<string, Rule>();
 await loadRulesInto(
   fileURLToPath(new URL("../../testassets/invalidrules", import.meta.url)),
-  invalidRules
+  invalidRules,
 );
 
 const warningRules = new Map<string, Rule>();
 await loadRulesInto(
   fileURLToPath(new URL("../../testassets/warningrules", import.meta.url)),
-  warningRules
+  warningRules,
 );
 
-describe("rule validation", () => {
-  it("should correctly reject invalid input", () => {
+await describe("rule validation", async () => {
+  await it("should correctly reject invalid input", () => {
     const nullResult = validateRule(null);
     assert(!nullResult.valid);
     assert(nullResult.errors.length === 1);
     assert(
       nullResult.errors.some(
-        (err) => err.type === RuleValidationErrorType.InvalidInput
-      )
+        (err) => err.type === RuleValidationErrorType.InvalidInput,
+      ),
     );
 
     const numberResult = validateRule(1);
@@ -40,12 +40,12 @@ describe("rule validation", () => {
     assert(numberResult.errors.length === 1);
     assert(
       numberResult.errors.some(
-        (err) => err.type === RuleValidationErrorType.InvalidInput
-      )
+        (err) => err.type === RuleValidationErrorType.InvalidInput,
+      ),
     );
   });
 
-  it("should correctly identify missing title", () => {
+  await it("should correctly identify missing title", () => {
     const rule = invalidRules.get("missing_title");
     assert(rule);
     const result = validateRule(rule);
@@ -55,12 +55,12 @@ describe("rule validation", () => {
       result.errors.some(
         (error) =>
           error.type === RuleValidationErrorType.MissingRequired &&
-          error.fieldName === "title"
-      )
+          error.fieldName === "title",
+      ),
     );
   });
 
-  it("should correctly identify missing detection", () => {
+  await it("should correctly identify missing detection", () => {
     const rule = invalidRules.get("missing_detection");
     assert(rule);
     const result = validateRule(rule);
@@ -70,12 +70,12 @@ describe("rule validation", () => {
       result.errors.some(
         (error) =>
           error.type === RuleValidationErrorType.MissingRequired &&
-          error.fieldName === "detection"
-      )
+          error.fieldName === "detection",
+      ),
     );
   });
 
-  it("should correctly identify missing detection condition", () => {
+  await it("should correctly identify missing detection condition", () => {
     const rule = invalidRules.get("missing_detection_condition");
     assert(rule);
     const result = validateRule(rule);
@@ -85,12 +85,12 @@ describe("rule validation", () => {
       result.errors.some(
         (error) =>
           error.type === RuleValidationErrorType.MissingRequired &&
-          error.fieldName === "detection.condition"
-      )
+          error.fieldName === "detection.condition",
+      ),
     );
   });
 
-  it("should identify invalid conditions", () => {
+  await it("should identify invalid conditions", () => {
     const rules = [
       invalidRules.get("invalid_condition_1"),
       invalidRules.get("invalid_condition_2"),
@@ -103,13 +103,13 @@ describe("rule validation", () => {
           !result.valid &&
           result.errors.some(
             (error) =>
-              error.type === RuleValidationErrorType.ConditionParseFailure
-          )
-      )
+              error.type === RuleValidationErrorType.ConditionParseFailure,
+          ),
+      ),
     );
   });
 
-  it("should correctly identify missing condition properties", () => {
+  await it("should correctly identify missing condition properties", () => {
     const rule = invalidRules.get("missing_detection_property");
     assert(rule);
     const result = validateRule(rule);
@@ -119,62 +119,63 @@ describe("rule validation", () => {
       result.errors.some(
         (error) =>
           error.type === RuleValidationErrorType.PropertyMissing &&
-          error.property === "p2"
-      )
+          error.property === "p2",
+      ),
     );
   });
 
-  it("should correctly identify valid rules", () => {
+  await it("should correctly identify valid rules", () => {
     const results = [];
     for (const rule of validRules.values()) {
       results.push(validateRule(rule));
     }
+
     assert(results.every((result) => result.valid));
   });
 });
 
-describe("rule validation warnings", () => {
-  it("should validate warnings as valid rules", () => {
+await describe("rule validation warnings", async () => {
+  await it("should validate warnings as valid rules", () => {
     assert(
       [...warningRules.values()]
         .map((rule) => validateRule(rule))
-        .every((result) => result.valid && (result.warnings?.length ?? false))
+        .every((result) => result.valid && (result.warnings?.length ?? false)),
     );
   });
 
-  it("should warn about non-standard level field", () => {
+  await it("should warn about non-standard level field", () => {
     const rule = warningRules.get("warning_level");
     assert(rule);
     const result = validateRule(rule);
     assert(result.warnings?.length === 1);
     assert(
       result.warnings.some((warning) =>
-        warning.startsWith("Non-standard rule level")
-      )
+        warning.startsWith("Non-standard rule level"),
+      ),
     );
   });
 
-  it("should warn about non-standard status field", () => {
+  await it("should warn about non-standard status field", () => {
     const rule = warningRules.get("warning_status");
     assert(rule);
     const result = validateRule(rule);
     assert(result.warnings?.length === 1);
     assert(
       result.warnings.some((warning) =>
-        warning.startsWith("Non-standard rule status")
-      )
+        warning.startsWith("Non-standard rule status"),
+      ),
     );
   });
 
-  it("should identify non-standard relations", () => {
+  await it("should identify non-standard relations", () => {
     const rule1 = warningRules.get("warning_relations_1");
     assert(rule1);
     const result1 = validateRule(rule1);
     assert(result1.warnings?.length === 1);
     assert(
       result1.warnings.some((warning) =>
-        warning.startsWith("Non-standard related value")
-      )
+        warning.startsWith("Non-standard related value"),
+      ),
     );
 
     const rule2 = warningRules.get("warning_relations_2");
@@ -183,8 +184,8 @@ describe("rule validation warnings", () => {
     assert(result2.warnings?.length === 1);
     assert(
       result2.warnings.some((warning) =>
-        warning.startsWith("Non-standard relation shape")
-      )
+        warning.startsWith("Non-standard relation shape"),
+      ),
     );
 
     const rule3 = warningRules.get("warning_relations_3");
@@ -193,8 +194,8 @@ describe("rule validation warnings", () => {
     assert(result3.warnings?.length === 1);
     assert(
       result3.warnings.some((warning) =>
-        warning.startsWith("Non-unique relation id")
-      )
+        warning.startsWith("Non-unique relation id"),
+      ),
     );
 
     const rule4 = warningRules.get("warning_relations_4");
@@ -205,20 +206,20 @@ describe("rule validation warnings", () => {
       result4.warnings.some(
         (warning) =>
           warning.startsWith("Non-standard relation type") &&
-          warning.endsWith("received non-existing")
-      )
+          warning.endsWith("received non-existing"),
+      ),
     );
   });
 
-  it("should warn about unused detection attributes", () => {
+  await it("should warn about unused detection attributes", () => {
     const rule = warningRules.get("warning_unused");
     assert(rule);
     const result = validateRule(rule);
     assert(result.warnings?.length === 1);
     assert(
       result.warnings.some((warning) =>
-        warning.startsWith("Found unused property p2")
-      )
+        warning.startsWith("Found unused property p2"),
+      ),
     );
   });
 });

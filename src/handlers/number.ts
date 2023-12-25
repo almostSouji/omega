@@ -1,4 +1,8 @@
-export function matchNumber(key: string, value: number, evaluatedValue: number) {
+export function matchNumber(
+  key: string,
+  value: number,
+  evaluatedValue: number,
+) {
   const [, op] = key.split("|");
 
   switch (op) {

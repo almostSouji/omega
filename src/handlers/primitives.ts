@@ -4,8 +4,8 @@ import { matchString } from "./string.js";
 
 export function matchPrimitives(
   key: string,
-  value: boolean | string | number,
-  structure: any
+  value: boolean | number | string,
+  structure: any,
 ) {
   const [pureKey] = key.split("|");
   if (!pureKey) {
@@ -38,5 +38,6 @@ export function matchPrimitives(
       }
     }
   }
+
   return false;
 }

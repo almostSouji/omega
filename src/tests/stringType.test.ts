@@ -1,9 +1,9 @@
-import { describe, it } from "node:test";
 import assert from "node:assert";
+import { describe, it } from "node:test";
 import { matchString } from "../handlers/string.js";
 
-describe("string modifiers", () => {
-  it("should evaluate string startswith modifiers", () => {
+await describe("string modifiers", async () => {
+  await it("should evaluate string startswith modifiers", () => {
     const key = "test|startswith";
     const value = "foo";
     assert(matchString(key, value, "foobar"));
@@ -12,7 +12,7 @@ describe("string modifiers", () => {
     assert(!matchString(key, value, "barbar"));
   });
 
-  it("should evaluate stirng endswith modifiers", () => {
+  await it("should evaluate stirng endswith modifiers", () => {
     const key = "test|endswith";
     const value = "foo";
     assert(!matchString(key, value, "foobar"));
@@ -21,7 +21,7 @@ describe("string modifiers", () => {
     assert(!matchString(key, value, "barbar"));
   });
 
-  it("should evaluate string contains modifiers", () => {
+  await it("should evaluate string contains modifiers", () => {
     const key = "test|contains";
     const value = "foo";
     assert(matchString(key, value, "foobar"));
@@ -31,8 +31,8 @@ describe("string modifiers", () => {
   });
 });
 
-describe("wildcards", () => {
-  it("should handle single character wildcards", () => {
+await describe("wildcards", async () => {
+  await it("should handle single character wildcards", () => {
     const key = "test";
     assert(!matchString(key, "fo?bar", "fobar"));
     assert(matchString(key, "fo?bar", "foobar"));
@@ -40,7 +40,7 @@ describe("wildcards", () => {
     assert(!matchString(key, "fo?bar", "fooobar"));
   });
 
-  it("should handle unbounded wildcards", () => {
+  await it("should handle unbounded wildcards", () => {
     const key = "test";
     assert(matchString(key, "fo*bar", "fobar"));
     assert(matchString(key, "fo*bar", "foobar"));
@@ -50,7 +50,7 @@ describe("wildcards", () => {
   });
 });
 
-it("should handle regular expressions", () => {
+await it("should handle regular expressions", () => {
   const key = "test|re";
   assert(matchString(key, "f\\w\\d", "fo1"));
   assert(!matchString(key, "f\\w\\d", "fo11"));
@@ -61,8 +61,8 @@ it("should handle regular expressions", () => {
   assert(!matchString(key, "\\d?a", "3aa"));
 });
 
-describe("combinations of modifiers and wildcards", () => {
-  it("should handle combinations of endeswith and wildcards", () => {
+await describe("combinations of modifiers and wildcards", async () => {
+  await it("should handle combinations of endeswith and wildcards", () => {
     const key = "test|endswith";
     assert(matchString(key, "b?r", "foobar"));
     assert(matchString(key, "b?r", "foober"));
@@ -73,7 +73,7 @@ describe("combinations of modifiers and wildcards", () => {
     assert(!matchString(key, "b*r", "foobaaa"));
   });
 
-  it("should handle combinations of startswith and wildcards", () => {
+  await it("should handle combinations of startswith and wildcards", () => {
     const key = "test|startswith";
     assert(matchString(key, "f?o", "foobar"));
     assert(matchString(key, "f?o", "fuobar"));
@@ -84,7 +84,7 @@ describe("combinations of modifiers and wildcards", () => {
     assert(!matchString(key, "f*o", "fubar"));
   });
 
-  it("should handle combinations of contains and wildcards", () => {
+  await it("should handle combinations of contains and wildcards", () => {
     const key = "test|contains";
     assert(!matchString(key, "o?o", "foobar"));
     assert(!matchString(key, "o?o", "fobaro"));
