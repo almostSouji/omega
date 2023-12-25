@@ -1,4 +1,6 @@
 node_modules/
-.yarn/
+.yarn/*
+!/.yarn/plugins
+!/.yarn/releases
 .env
 dist/

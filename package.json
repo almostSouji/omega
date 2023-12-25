@@ -19,7 +19,8 @@
     "start:dev": "npm run build && npm run dev",
     "dev": "node --enable-source-maps dist/index.js",
     "test": "yarn build && node --enable-source-maps --test",
-    "test:only": "yarn test --test-only"
+    "test:only": "yarn test --test-only",
+    "prepare": "is-ci || husky install"
   },
   "dependencies": {
     "chevrotain": "^11.0.3",
