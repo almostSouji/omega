@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import assert from "node:assert";
 import { fileURLToPath, URL } from "node:url";
 import { describe, it } from "node:test";

@@ -1,30 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { Octokit } from "octokit";
 import readdirp from "readdirp";
-import { container } from "tsyringe";
 import { parse } from "yaml";
-import type { Rule } from "./types/omega.js";
-import { kRules } from "./utils/symbols.js";
-
-/**
- * Create a rule cache
- *
- * @returns A reference to the rule cache
- */
-export function createRuleCache() {
-  const rules = new Map<string, Rule>();
-  container.register(kRules, { useValue: rules });
-  return rules;
-}
-
-/**
- * Get the registered rule cache
- *
- * @returns A reference to the rule cache
- */
-export function getRuleChache() {
-  return container.resolve<Map<string, Rule>>(kRules);
-}
+import type { Rule, RuleCache } from "./types/omega.js";
 
 /**
  * Load rules from a defined directory and all sub directories into the provided cache
@@ -33,7 +11,7 @@ export function getRuleChache() {
  * @param cache - The rule cache to load rules into
  * @returns A reference to the rule cache
  */
-export async function loadRulesInto(path: string, cache: Map<string, Rule>) {
+export async function loadRulesInto(path: string, cache: RuleCache) {
   const ruleDir = readdirp(path, {
     fileFilter: "*.yml",
   });
@@ -100,7 +78,7 @@ export async function loadRuleRepositoryInto(
   owner: string,
   repository: string,
   path: string,
-  cache: Map<string, Rule>,
+  cache: RuleCache,
 ) {
   const result = await fetchRepositoryContents(owner, repository, path, []);
 

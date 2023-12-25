@@ -7,6 +7,9 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build:clean": "del-cli dist",
     "build:check": "tsc --noEmit",
@@ -20,15 +23,14 @@
     "dev": "node --enable-source-maps dist/index.js",
     "test": "yarn build && node --enable-source-maps --test",
     "test:only": "yarn test --test-only",
-    "prepare": "is-ci || husky install"
+    "prepare": "is-ci || husky install",
+    "prepublish": "tsc"
   },
   "dependencies": {
     "chevrotain": "^11.0.3",
     "octokit": "^3.1.2",
     "re2": "^1.20.9",
     "readdirp": "^3.6.0",
-    "reflect-metadata": "^0.2.1",
-    "tsyringe": "^4.8.0",
     "yaml": "^2.3.4"
   },
   "devDependencies": {
@@ -46,6 +48,9 @@
     "prettier": "^3.1.1",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=21.0.0"
   },
   "packageManager": "yarn@4.0.2"
 }

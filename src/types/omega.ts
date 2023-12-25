@@ -36,6 +36,8 @@ export type Rule = {
   title: string;
 };
 
+export type RuleCache = Map<string, Rule>;
+
 export type OmegaResult = {
   matches: boolean;
   rule: Rule;
