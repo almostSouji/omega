@@ -1,8 +1,34 @@
 import { readFile } from "node:fs/promises";
+import { basename } from "node:path";
 import { Octokit } from "octokit";
 import readdirp from "readdirp";
 import { parse } from "yaml";
 import type { Rule, RuleCache } from "./types/omega.js";
+import { validateRule } from "./utils/validator.js";
+
+/**
+ * Load a file from the provided path into the provided cache.
+ * Note: invalid rules are skipped
+ *
+ * @param path - The file path to load from
+ * @param cache - The rule cache to load rules into
+ * @returns A reference to the rule cache
+ */
+export async function loadRuleInto(path: string, cache: RuleCache) {
+  const file = await readFile(path, "utf8");
+  const rule = parse(file) as Rule;
+  const validationresult = validateRule(rule);
+  if (validationresult.valid) {
+    const baseName = basename(path);
+    const [name] = baseName.split(".");
+
+    const identifier = name ?? baseName;
+
+    cache.set(identifier, rule);
+  }
+
+  return cache;
+}
 
 /**
  * Load rules from a defined directory and all sub directories into the provided cache
@@ -17,13 +43,7 @@ export async function loadRulesInto(path: string, cache: RuleCache) {
   });
 
   for await (const dir of ruleDir) {
-    const file = await readFile(dir.fullPath, "utf8");
-    const rule = parse(file) as Rule;
-    const [name] = dir.basename.split(".");
-
-    const identifier = name ?? dir.basename;
-
-    cache.set(identifier, rule);
+    await loadRuleInto(dir.fullPath, cache);
   }
 
   return cache;
@@ -39,7 +59,7 @@ async function fetchRepositoryContents(
   owner: string,
   repo: string,
   path: string,
-  rules: GithubRuleEntry[],
+  rules: GithubRuleEntry[]
 ) {
   const res = await kit.request(
     `GET /repos/${owner}/${repo}/contents/${path ?? ""}`,
@@ -47,7 +67,7 @@ async function fetchRepositoryContents(
       headers: {
         "X-GitHub-Version": "2022/11/28",
       },
-    },
+    }
   );
 
   if (res.status !== 200) {
@@ -78,7 +98,7 @@ export async function loadRuleRepositoryInto(
   owner: string,
   repository: string,
   path: string,
-  cache: RuleCache,
+  cache: RuleCache
 ) {
   const result = await fetchRepositoryContents(owner, repository, path, []);
 
