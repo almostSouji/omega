@@ -14,18 +14,36 @@ import { validateRule } from "./utils/validator.js";
  * @param cache - The rule cache to load rules into
  * @returns A reference to the rule cache
  */
-export async function loadRuleInto(path: string, cache: RuleCache) {
+export async function loadRuleInto(
+  path: string,
+  cache: RuleCache,
+  options?: {
+    ignoreInvalid?: boolean;
+    throwOnInvalid?: boolean;
+  },
+) {
   const file = await readFile(path, "utf8");
   const rule = parse(file) as Rule;
   const validationresult = validateRule(rule);
-  if (validationresult.valid) {
-    const baseName = basename(path);
-    const [name] = baseName.split(".");
 
-    const identifier = name ?? baseName;
-
-    cache.set(identifier, rule);
+  if (options?.throwOnInvalid && !validationresult.valid) {
+    throw new Error("validationresult", {
+      cause: {
+        rule,
+        validationresult,
+      },
+    });
   }
+
+  if (options?.ignoreInvalid && !validationresult.valid) {
+    return cache;
+  }
+
+  const baseName = basename(path);
+  const [name] = baseName.split(".");
+  const identifier = name ?? baseName;
+
+  cache.set(identifier, rule);
 
   return cache;
 }
@@ -37,13 +55,17 @@ export async function loadRuleInto(path: string, cache: RuleCache) {
  * @param cache - The rule cache to load rules into
  * @returns A reference to the rule cache
  */
-export async function loadRulesInto(path: string, cache: RuleCache) {
+export async function loadRulesInto(
+  path: string,
+  cache: RuleCache,
+  options?: { ignoreInvalid?: boolean; throwOnInvalid?: boolean },
+) {
   const ruleDir = readdirp(path, {
     fileFilter: "*.yml",
   });
 
   for await (const dir of ruleDir) {
-    await loadRuleInto(dir.fullPath, cache);
+    await loadRuleInto(dir.fullPath, cache, options);
   }
 
   return cache;
@@ -59,7 +81,7 @@ async function fetchRepositoryContents(
   owner: string,
   repo: string,
   path: string,
-  rules: GithubRuleEntry[]
+  rules: GithubRuleEntry[],
 ) {
   const res = await kit.request(
     `GET /repos/${owner}/${repo}/contents/${path ?? ""}`,
@@ -67,7 +89,7 @@ async function fetchRepositoryContents(
       headers: {
         "X-GitHub-Version": "2022/11/28",
       },
-    }
+    },
   );
 
   if (res.status !== 200) {
@@ -98,7 +120,7 @@ export async function loadRuleRepositoryInto(
   owner: string,
   repository: string,
   path: string,
-  cache: RuleCache
+  cache: RuleCache,
 ) {
   const result = await fetchRepositoryContents(owner, repository, path, []);
 
