@@ -61,7 +61,8 @@ export async function loadRulesInto(
   options?: { ignoreInvalid?: boolean; throwOnInvalid?: boolean },
 ) {
   const ruleDir = readdirp(path, {
-    fileFilter: "*.yml",
+    fileFilter: (file) =>
+      ["yml", "yaml"].some((suffix) => file.basename.endsWith(suffix)),
   });
 
   for await (const dir of ruleDir) {
