@@ -1360,7 +1360,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/helpers@npm:^0.5.3":
+"@swc/helpers@npm:^0.5.15":
   version: 0.5.15
   resolution: "@swc/helpers@npm:0.5.15"
   dependencies:
@@ -4681,12 +4681,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^8.0.3":
-  version: 8.0.3
-  resolution: "husky@npm:8.0.3"
+"husky@npm:^9.1.7":
+  version: 9.1.7
+  resolution: "husky@npm:9.1.7"
   bin:
-    husky: lib/bin.js
-  checksum: 10c0/6722591771c657b91a1abb082e07f6547eca79144d678e586828ae806499d90dce2a6aee08b66183fd8b085f19d20e0990a2ad396961746b4c8bd5bdb619d668
+    husky: bin.js
+  checksum: 10c0/35bb110a71086c48906aa7cd3ed4913fb913823715359d65e32e0b964cb1e255593b0ae8014a5005c66a68e6fa66c38dcfa8056dbbdfb8b0187c0ffe7ee3a58f
   languageName: node
   linkType: hard
 
@@ -6823,13 +6823,13 @@ __metadata:
     "@commitlint/config-angular": "npm:^18.4.3"
     "@swc/cli": "npm:^0.5.2"
     "@swc/core": "npm:^1.10.1"
-    "@swc/helpers": "npm:^0.5.3"
+    "@swc/helpers": "npm:^0.5.15"
     "@types/node": "npm:^22.10.2"
     chevrotain: "npm:^11.0.3"
     del-cli: "npm:^6.0.0"
     eslint: "npm:^8.56.0"
     eslint-config-neon: "npm:0.1.57"
-    husky: "npm:^8.0.3"
+    husky: "npm:^9.1.7"
     lint-staged: "npm:^15.2.0"
     octokit: "npm:^4.0.2"
     prettier: "npm:^3.4.2"
