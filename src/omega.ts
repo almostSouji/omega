@@ -4,13 +4,13 @@ import { handleMultiPartKey } from "./handlers/multiPartKey.js";
 import { matchPrimitives } from "./handlers/primitives.js";
 import { phraseAnywhere } from "./handlers/string.js";
 import type {
-  OmegaMap,
   DetectionRecord,
   OmegaList,
-  Rule,
+  OmegaMap,
   OmegaResult,
+  Rule,
 } from "./types/omega.js";
-import { parseOmegaCondition, QueryKind, type Query } from "./utils/parser.js";
+import { parseOmegaCondition, type Query, QueryKind } from "./utils/parser.js";
 
 export function evaluateCondition(
   key: string,

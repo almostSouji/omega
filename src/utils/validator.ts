@@ -3,61 +3,61 @@ import { extractConditionTerms } from "../omega.js";
 import { parseOmegaCondition } from "./parser.js";
 
 export const relationTypes = [
-  "derived",
-  "obsoletes",
-  "merged",
-  "renamed",
-  "similar",
+	"derived",
+	"obsoletes",
+	"merged",
+	"renamed",
+	"similar",
 ] as const;
 
 export const ruleLevels = [
-  "informational",
-  "low",
-  "medium",
-  "high",
-  "critical",
+	"informational",
+	"low",
+	"medium",
+	"high",
+	"critical",
 ] as const;
 
 export const ruleStati = [
-  "unsupported",
-  "deprecated",
-  "experimental",
-  "test",
-  "stable",
+	"unsupported",
+	"deprecated",
+	"experimental",
+	"test",
+	"stable",
 ] as const;
 
 export enum RuleValidationErrorType {
-  MissingRequired,
-  InvalidInput,
-  ConditionParseFailure,
-  PropertyMissing,
+	MissingRequired,
+	InvalidInput,
+	ConditionParseFailure,
+	PropertyMissing,
 }
 
 export type RuleValidationError =
-  | {
-      fieldName: string;
-      type: RuleValidationErrorType.MissingRequired;
-    }
-  | {
-      property: string;
-      type: RuleValidationErrorType.PropertyMissing;
-    }
-  | {
-      type: RuleValidationErrorType.ConditionParseFailure;
-    }
-  | {
-      type: RuleValidationErrorType.InvalidInput;
-    };
+	| {
+			fieldName: string;
+			type: RuleValidationErrorType.MissingRequired;
+	  }
+	| {
+			property: string;
+			type: RuleValidationErrorType.PropertyMissing;
+	  }
+	| {
+			type: RuleValidationErrorType.ConditionParseFailure;
+	  }
+	| {
+			type: RuleValidationErrorType.InvalidInput;
+	  };
 
 export type ValidRuleResult = {
-  valid: true;
-  warnings?: string[];
+	valid: true;
+	warnings?: string[];
 };
 
 export type InvalidRuleResult = {
-  errors: RuleValidationError[];
-  valid: false;
-  warnings?: string[];
+	errors: RuleValidationError[];
+	valid: false;
+	warnings?: string[];
 };
 
 export type RuleValidationResult = InvalidRuleResult | ValidRuleResult;
@@ -69,131 +69,131 @@ export type RuleValidationResult = InvalidRuleResult | ValidRuleResult;
  * @returns The validation result
  */
 export function validateRule(rule: any): RuleValidationResult {
-  const errors: RuleValidationError[] = [];
-  const warnings: string[] = [];
-  if (!rule || typeof rule !== "object") {
-    return {
-      valid: false,
-      errors: [
-        {
-          type: RuleValidationErrorType.InvalidInput,
-        },
-      ],
-    };
-  }
+	const errors: RuleValidationError[] = [];
+	const warnings: string[] = [];
+	if (!rule || typeof rule !== "object") {
+		return {
+			valid: false,
+			errors: [
+				{
+					type: RuleValidationErrorType.InvalidInput,
+				},
+			],
+		};
+	}
 
-  if (!rule.title) {
-    errors.push({
-      type: RuleValidationErrorType.MissingRequired,
-      fieldName: "title",
-    });
-  }
+	if (!rule.title) {
+		errors.push({
+			type: RuleValidationErrorType.MissingRequired,
+			fieldName: "title",
+		});
+	}
 
-  if (rule.detection) {
-    const condition = rule.detection.condition;
-    if (condition) {
-      const root = parseOmegaCondition(condition);
-      if (root) {
-        const terms = extractConditionTerms(condition) ?? [];
-        for (const property of terms) {
-          if (!(property in rule.detection)) {
-            errors.push({
-              type: RuleValidationErrorType.PropertyMissing,
-              property,
-            });
-          }
-        }
+	if (rule.detection) {
+		const condition = rule.detection.condition;
+		if (condition) {
+			const root = parseOmegaCondition(condition);
+			if (root) {
+				const terms = extractConditionTerms(condition) ?? [];
+				for (const property of terms) {
+					if (!(property in rule.detection)) {
+						errors.push({
+							type: RuleValidationErrorType.PropertyMissing,
+							property,
+						});
+					}
+				}
 
-        for (const property of Object.keys(rule.detection)) {
-          if (!terms.includes(property) && property !== "condition") {
-            warnings.push(
-              `Found unused property ${property} not present in the detection condition.`,
-            );
-          }
-        }
-      } else {
-        errors.push({
-          type: RuleValidationErrorType.ConditionParseFailure,
-        });
-      }
-    } else {
-      errors.push({
-        type: RuleValidationErrorType.MissingRequired,
-        fieldName: "detection.condition",
-      });
-    }
-  } else {
-    errors.push({
-      type: RuleValidationErrorType.MissingRequired,
-      fieldName: "detection",
-    });
-  }
+				for (const property of Object.keys(rule.detection)) {
+					if (!terms.includes(property) && property !== "condition") {
+						warnings.push(
+							`Found unused property ${property} not present in the detection condition.`,
+						);
+					}
+				}
+			} else {
+				errors.push({
+					type: RuleValidationErrorType.ConditionParseFailure,
+				});
+			}
+		} else {
+			errors.push({
+				type: RuleValidationErrorType.MissingRequired,
+				fieldName: "detection.condition",
+			});
+		}
+	} else {
+		errors.push({
+			type: RuleValidationErrorType.MissingRequired,
+			fieldName: "detection",
+		});
+	}
 
-  if (rule.status) {
-    const status = rule.status;
-    if (!ruleStati.includes(status)) {
-      warnings.push(
-        `Non-standard rule status, expected one of ${ruleStati.join(
-          ", ",
-        )} received ${status}`,
-      );
-    }
-  }
+	if (rule.status) {
+		const status = rule.status;
+		if (!ruleStati.includes(status)) {
+			warnings.push(
+				`Non-standard rule status, expected one of ${ruleStati.join(
+					", ",
+				)} received ${status}`,
+			);
+		}
+	}
 
-  if (rule.level) {
-    const level = rule.level;
-    if (!ruleLevels.includes(level)) {
-      warnings.push(
-        `Non-standard rule level, expected one of ${ruleLevels.join(
-          ", ",
-        )}, received ${level}`,
-      );
-    }
-  }
+	if (rule.level) {
+		const level = rule.level;
+		if (!ruleLevels.includes(level)) {
+			warnings.push(
+				`Non-standard rule level, expected one of ${ruleLevels.join(
+					", ",
+				)}, received ${level}`,
+			);
+		}
+	}
 
-  if (rule.related) {
-    const relations = rule.related;
-    if (Array.isArray(relations)) {
-      const uniqueIds = new Set();
-      for (const relation of relations) {
-        if (
-          (relation.id && relation.type) ||
-          typeof relation.id === "string" ||
-          typeof relation.type === "string"
-        ) {
-          const before = uniqueIds.size;
-          uniqueIds.add(relation.id);
+	if (rule.related) {
+		const relations = rule.related;
+		if (Array.isArray(relations)) {
+			const uniqueIds = new Set();
+			for (const relation of relations) {
+				if (
+					(relation.id && relation.type) ||
+					typeof relation.id === "string" ||
+					typeof relation.type === "string"
+				) {
+					const before = uniqueIds.size;
+					uniqueIds.add(relation.id);
 
-          const type = relation.type;
-          if (!relationTypes.includes(type)) {
-            warnings.push(
-              `Non-standard relation type at relation id ${
-                relation.id
-              }, expected one of ${relationTypes.join(", ")}, received ${type}`,
-            );
-          }
+					const type = relation.type;
+					if (!relationTypes.includes(type)) {
+						warnings.push(
+							`Non-standard relation type at relation id ${
+								relation.id
+							}, expected one of ${relationTypes.join(", ")}, received ${type}`,
+						);
+					}
 
-          if (uniqueIds.size !== before + 1) {
-            warnings.push(`Non-unique relation id ${relation.id}`);
-          }
-        } else {
-          warnings.push(
-            `Non-standard relation shape, expected id: string, type: string, received ${relation}`,
-          );
-        }
-      }
-    } else {
-      warnings.push(
-        `Non-standard related value, expected list, found ${rule.related}`,
-      );
-    }
-  }
+					if (uniqueIds.size !== before + 1) {
+						warnings.push(`Non-unique relation id ${relation.id}`);
+					}
+				} else {
+					warnings.push(
+						`Non-standard relation shape, expected id: string, type: string, received ${relation}`,
+					);
+				}
+			}
+		} else {
+			warnings.push(
+				`Non-standard related value, expected list, found ${rule.related}`,
+			);
+		}
+	}
 
-  return {
-    warnings,
-    errors,
-    valid: !errors.length,
-  };
+	return {
+		warnings,
+		errors,
+		valid: !errors.length,
+	};
 }
 
 /**
@@ -203,6 +203,6 @@ export function validateRule(rule: any): RuleValidationResult {
  * @returns The validation result
  */
 export function validateYamlRule(rule: string): RuleValidationResult {
-  const parsedRule = parse(rule);
-  return validateRule(parsedRule);
+	const parsedRule = parse(rule);
+	return validateRule(parsedRule);
 }

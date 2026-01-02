@@ -2,15 +2,6 @@
 
 The pattern matching and rule syntax are based on [Sigma rules](https://github.com/SigmaHQ/sigma), but adapted for the analysis of javscript objects rather than logfiles.
 
-## Why should I use this?
-
-You probably shouldn't.
-
-- The entire rule engine is written in TypeScript and the evaluation is very much not optimized for use at massive scale.
-- This is a proof of concept for my personal use and to increase my understanding of detection flows.
-
-However, if you are intersted in evaluating arbitrary objects against something closely resembling sigma rules, feel free to give it a shot!
-
 - [Writing detection logic](https://github.com/almostSouji/omega/wiki/How-to-write-a-rule) is simple, yet quite powerful!
 - [Rules can have rich meta data](https://github.com/almostSouji/omega/wiki/Rule-Fields), so you know what is matched and why!
 - [Integreation is approachable](https://github.com/almostSouji/omega/wiki), you should be able to get this working pretty quickly!
