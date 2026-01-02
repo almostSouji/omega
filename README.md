@@ -8,13 +8,13 @@ The pattern matching and rule syntax are based on [Sigma rules](https://github.c
 
 ## Contributing
 
-Before contributing, please read through the [wiki](https://github.com/almostSouji/omega/wiki). It details almost anything there is to know. If the wiki is not specific enough, check out the [Sigma rule specification](https://sigmahq.io/sigma-specification/Sigma_specification.html), Omega is very much built around it!
+Before contributing, please read through the [wiki](https://github.com/almostSouji/omega/wiki). It details almost anything there is to know. If the wiki is not specific enough, check out the [Sigma rule specification](https://github.com/SigmaHQ/sigma-specification), Omega is built around it!
 
 Before submitting a PR, please make sure:
 
 - The project builds `yarn build`.
 - The tests run without fail `yarn test`.
-- The format and lint rule are applied and respected `yarn lint`, `yarn format`
+- The format and lint rule are applied and respected `yarn lint`, `yarn format`.
 
 ## Inspiration and simialar projects
 

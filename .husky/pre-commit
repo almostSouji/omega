@@ -1,1 +1,0 @@
-yarn build && yarn fmt && yarn lint-staged && yarn test

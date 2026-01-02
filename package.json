@@ -21,7 +21,9 @@
 		"test": "yarn build && vitest run",
 		"test:watch": "yarn build && vitest watch",
 		"prepare": "is-ci || husky install",
-		"prepublish": "tsc"
+		"prepublish": "tsc",
+		"lint": "yarn biome lint",
+		"format": "yarn biome format --write"
 	},
 	"dependencies": {
 		"chevrotain": "^11.0.3",
@@ -31,7 +33,7 @@
 		"yaml": "^2.6.1"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.3.4",
+		"@biomejs/biome": "2.3.10",
 		"@commitlint/cli": "^18.4.3",
 		"@commitlint/config-angular": "^18.4.3",
 		"@swc/cli": "^0.5.2",
@@ -39,8 +41,7 @@
 		"@swc/helpers": "^0.5.15",
 		"@types/node": "^22.10.2",
 		"del-cli": "^6.0.0",
-		"husky": "^9.1.7",
-		"lint-staged": "^15.2.0",
+		"lefthook": "^2.0.13",
 		"rimraf": "^6.0.1",
 		"typescript": "^5.7.2",
 		"vitest": "^4.0.16"
