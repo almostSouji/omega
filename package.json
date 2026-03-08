@@ -1,6 +1,6 @@
 {
 	"name": "omega-rules",
-	"version": "0.4.4",
+	"version": "0.4.6",
 	"description": "SIEM rules for JS objects",
 	"author": "almostSouji <timoqueezle@gmail.com>",
 	"license": "MIT",
@@ -13,8 +13,9 @@
 	"scripts": {
 		"build:clean": "del-cli dist",
 		"build:check": "tsc --noEmit",
+		"build:types": "tsc --emitDeclarationOnly",
 		"build:esm": "swc ./src --out-dir ./dist --strip-leading-paths",
-		"build": "yarn build:clean && yarn build:check && yarn build:esm",
+		"build": "yarn build:clean && yarn build:check && yarn build:esm && yarn build:types",
 		"start": "node dist/index.js",
 		"start:dev": "npm run build && npm run dev",
 		"dev": "node --enable-source-maps dist/index.js",

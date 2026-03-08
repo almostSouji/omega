@@ -1,5 +1,6 @@
 {
 	// Visit https://aka.ms/tsconfig to read more about this file
+	"include": ["./src"],
 	"compilerOptions": {
 		// File Layout
 		"rootDirs": ["./src", "./__tests__"],
@@ -18,6 +19,8 @@
 
 		// Other Outputs
 		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true,
 
 		// Stricter Typechecking Options
 		"noUncheckedIndexedAccess": true,
